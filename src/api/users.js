@@ -85,6 +85,12 @@ export const usersApi = {
   withdrawReject: (data) => {
     return putRequest('/user/admin/wallet/withdraw/reject', data)
   },
+  rechargeReconcileStats: (data = {}) => {
+    return getRequest('/user/admin/wallet/recharge/reconcile/stats?recentHours=' + (data.recentHours || 24))
+  },
+  rechargeReconcileRun: (data = {}) => {
+    return postRequest('/user/admin/wallet/recharge/reconcile/run?timeoutMinutes=' + (data.timeoutMinutes || 30), {})
+  },
 
   // message page
   msgPage: (params, pageCurrent = 1, pageSize = 20) => {
@@ -94,9 +100,17 @@ export const usersApi = {
   msgView: (data) => {
     return getRequest('/user/admin/msg/view?id=' + data.id)
   },
+  // message effect
+  msgEffect: (data) => {
+    return getRequest('/user/admin/msg/effect?id=' + data.id)
+  },
   // message save
   msgSave: (data) => {
     return postRequest('/user/admin/msg/save', data)
+  },
+  // message dispatch
+  msgDispatch: (data) => {
+    return postRequest('/user/admin/msg/dispatch', data)
   },
   // message edit
   msgEdit: (data) => {
@@ -105,5 +119,9 @@ export const usersApi = {
   // message delete
   msgDelete: (data) => {
     return deleteRequest('/user/admin/msg/delete?id=' + data.id)
+  },
+  // message delivery page
+  msgUserPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/msg/user/page', { pageCurrent, pageSize, ...params })
   }
 }

@@ -135,7 +135,7 @@
     'wallet:withdraw:audit:page': [
       { label: 'Withdraw Pass Button', value: 'withdraw-pass' },
       { label: 'Withdraw Reject Button', value: 'withdraw-reject' },
-      { label: 'Withdraw Remark Button', value: 'withdraw-remark' }
+      { label: 'Withdraw Audit Note Permission', value: 'withdraw-remark' }
     ]
   }
 

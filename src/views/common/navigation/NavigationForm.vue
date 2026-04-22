@@ -10,6 +10,7 @@
       <el-form-item label="跳转方式" prop="target">
         <enum-radio v-model="formModel.navTarget" :enum-name="'TargetEnum'"></enum-radio>
       </el-form-item>
+      <mobile-ops-fields :model="formModel" />
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -24,6 +25,8 @@
   import { reactive, ref } from 'vue'
   import { systemApi } from '@/api/system'
   import EnumRadio from '@/components/Enum/Radio/index.vue'
+  import MobileOpsFields from '@/components/common/MobileOpsFields.vue'
+  import { buildMobileOpsPayload, normalizeMobileOpsForm, validateMobileOpsForm } from '@/utils/mobileOpsFieldAdapter'
 
   // 校验规则
   const formRef = ref()
@@ -40,6 +43,11 @@
     navTitle: undefined,
     navUrl: undefined,
     navTarget: 1,
+    targetType: 1,
+    targetId: undefined,
+    link: undefined,
+    action: 'navigate',
+    status: 1,
     sort: 1
   }
   const formModel = reactive({ ...formDefault })
@@ -48,17 +56,25 @@
     const valid = await formRef.value.validate()
     if (!valid) return
 
+    const normalized = normalizeMobileOpsForm(formModel)
+    const gate = validateMobileOpsForm(normalized)
+    if (!gate.valid) {
+      ElMessage.error(gate.errors[0] || '字段校验失败')
+      return
+    }
+    const payload = buildMobileOpsPayload(normalized, 'nav')
+
     if (loading.value === true) {
       ElMessage.warning('正在处理···')
       return
     }
     loading.value = true
     try {
-      if (formModel.id) {
-        await systemApi.navEdit(formModel)
+      if (payload.id) {
+        await systemApi.navEdit(payload)
         ElMessage.success('修改成功')
       } else {
-        await systemApi.navSave(formModel)
+        await systemApi.navSave(payload)
         ElMessage.success('添加成功')
       }
       emit('refresh')
@@ -72,7 +88,7 @@
   const visible = ref(false) // 弹窗显示状态
   const onOpen = (item) => {
     if (item) {
-      Object.assign(formModel, item)
+      Object.assign(formModel, normalizeMobileOpsForm(item))
     }
     visible.value = true
   }

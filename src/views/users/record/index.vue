@@ -56,7 +56,7 @@
   import EnumView from '@/components/Enum/View/index.vue'
   const route = useRoute()
   const activeName = ref(route.query.activeName || 'order')
-  const canVisitWithdrawAudit = hasPermission('wallet:withdraw:audit:page') || hasPermission('user:record')
+  const canVisitWithdrawAudit = hasPermission('wallet:withdraw:audit:page')
   // 切换
   const handleClick = (target) => {
     activeName.value = target.props.name

@@ -25,9 +25,11 @@
           <img :alt="scope.row.carouselTitle" :src="scope.row.carouselImg" style="height: 72px; width: auto" />
         </template>
       </el-table-column>
-      <el-table-column :min-width="120" label="访问地址" prop="carouselUrl">
+      <el-table-column :min-width="120" label="移动语义">
         <template #default="scope">
-          <el-link type="primary" :href="scope.row.carouselUrl" target="_blank">{{ scope.row.carouselUrl }}</el-link>
+          <div>{{ describeMobileOps(scope.row.carouselUrl).targetTypeLabel }} / {{ describeMobileOps(scope.row.carouselUrl).actionLabel }}</div>
+          <div style="color: #999; font-size: 12px">目标ID：{{ describeMobileOps(scope.row.carouselUrl).targetId }}</div>
+          <div style="color: #999; font-size: 12px">链接：{{ describeMobileOps(scope.row.carouselUrl).displayLink }}</div>
         </template>
       </el-table-column>
       <el-table-column :min-width="50" label="跳转方式">
@@ -78,6 +80,7 @@
   import EnumView from '@/components/Enum/View/index.vue'
   import { ref } from 'vue'
   import EnumSelect from '@/components/Enum/Select/index.vue'
+  import { describeMobileOps } from '@/utils/mobileOpsFieldAdapter'
 
   // 添加/修改
   const formRef = ref()

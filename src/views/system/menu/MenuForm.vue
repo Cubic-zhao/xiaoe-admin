@@ -99,7 +99,7 @@
     { label: '\u63d0\u73b0\u5ba1\u6838 - \u8def\u7531\u83dc\u5355', value: 'withdraw-page' },
     { label: '\u63d0\u73b0\u5ba1\u6838 - \u901a\u8fc7\u6309\u94ae', value: 'withdraw-pass' },
     { label: '\u63d0\u73b0\u5ba1\u6838 - \u9a73\u56de\u6309\u94ae', value: 'withdraw-reject' },
-    { label: '\u63d0\u73b0\u5ba1\u6838 - \u5907\u6ce8\u6309\u94ae', value: 'withdraw-remark' }
+    { label: '\u63d0\u73b0\u5ba1\u6838 - \u5ba1\u6838\u5907\u6ce8\u6743\u9650', value: 'withdraw-remark' }
   ]
 
   const presetMap = {
@@ -168,7 +168,7 @@
       menuName: '\u63d0\u73b0\u5ba1\u6838-\u5907\u6ce8',
       permission: 'wallet:withdraw:audit:remark',
       apis: '',
-      remark: '\u63d0\u73b0\u5ba1\u6838\u5907\u6ce8\u6269\u5c55\u6743\u9650'
+      remark: '\u63d0\u73b0\u5ba1\u6838\u901a\u8fc7\u65f6\u7684\u5ba1\u6838\u5907\u6ce8\u6743\u9650'
     }
   }
 

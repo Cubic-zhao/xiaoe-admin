@@ -5,11 +5,13 @@
         <list :list="page.list" :config-type="item.configType" @refresh="handlePage"></list>
       </el-tab-pane>
     </el-tabs>
+    <release-gate-panel />
   </div>
 </template>
 <script setup>
   import { ref } from 'vue'
   import List from './List.vue'
+  import ReleaseGatePanel from './ReleaseGatePanel.vue'
   import { systemApi } from '@/api/system'
   import useTable from '@/utils/table'
 

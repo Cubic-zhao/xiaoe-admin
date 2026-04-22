@@ -113,17 +113,28 @@
     const valid = await formRef.value.validate()
     if (!valid) return
 
+    if (Number(formModel.rulingPrice || 0) < Number(formModel.coursePrice || 0)) {
+      ElMessage.warning('划线价不能小于销售价')
+      return
+    }
+
     if (loading.value === true) {
       ElMessage.warning('正在处理···')
       return
     }
+
+    const payload = {
+      ...formModel,
+      isFree: Number(formModel.coursePrice || 0) <= 0 ? 1 : 0
+    }
+
     loading.value = true
     try {
       if (formModel.id) {
-        await courseApi.courseEdit(formModel)
+        await courseApi.courseEdit(payload)
         ElMessage.success('修改成功')
       } else {
-        await courseApi.courseSave(formModel)
+        await courseApi.courseSave(payload)
         ElMessage.success('添加成功')
       }
       handleClose()

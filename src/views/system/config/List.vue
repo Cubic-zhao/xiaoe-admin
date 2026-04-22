@@ -1,4 +1,25 @@
 <template>
+  <el-alert
+    v-if="props.configType === '2'"
+    title="Teacher 移动端策略：交付（deliver）/下线（offline）"
+    type="info"
+    :closable="false"
+    style="margin-bottom: 12px"
+  />
+  <el-card v-if="props.configType === '2'" shadow="never" style="margin-bottom: 12px">
+    <el-form label-width="140px">
+      <el-form-item label="Teacher 交付策略">
+        <el-radio-group v-model="teacherStrategy">
+          <el-radio label="deliver">交付</el-radio>
+          <el-radio label="offline">下线</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="saveTeacherStrategy">保存策略</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
+
   <el-table :data="props.list">
     <el-table-column label="配置名称" prop="configName" min-width="30">
       <template #default="scope">
@@ -58,7 +79,7 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
   import ConfigForm from './ConfigForm.vue'
   import FormView from './View.vue'
   import { systemApi } from '@/api/system.js'
@@ -96,6 +117,33 @@
 
   const emit = defineEmits(['refresh'])
   const handleList = () => {
+    emit('refresh')
+  }
+
+  const teacherStrategy = ref('deliver')
+  const teacherStrategyConfig = computed(() => props.list?.find((item) => item.configKey === 'mobileTeacherStrategy'))
+
+  watch(
+    () => teacherStrategyConfig.value,
+    (item) => {
+      if (item?.configValue) {
+        teacherStrategy.value = item.configValue
+      }
+    },
+    { immediate: true }
+  )
+
+  const saveTeacherStrategy = async () => {
+    if (!teacherStrategyConfig.value) {
+      ElMessage.warning('未找到 mobileTeacherStrategy 配置项，请先由后端初始化')
+      return
+    }
+    await systemApi.sysConfigEdit({
+      id: teacherStrategyConfig.value.id,
+      configKey: 'mobileTeacherStrategy',
+      configValue: teacherStrategy.value
+    })
+    ElMessage.success('Teacher 策略已保存')
     emit('refresh')
   }
 

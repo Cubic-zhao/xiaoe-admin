@@ -44,6 +44,12 @@
           <span>{{ scope.row.countBuy }} / {{ scope.row.countStudy }}</span>
         </template>
       </el-table-column>
+      <el-table-column :min-width="40" label="移动端消费字段">
+        <template #default="scope">
+          <div>章节: {{ scope.row.periodCount ?? 0 }}</div>
+          <div class="table-secondary">评论: {{ scope.row.commentCount ?? 0 }} | 评分: {{ scope.row.rating ?? 0 }}</div>
+        </template>
+      </el-table-column>
       <el-table-column :min-width="30" label="售卖">
         <template #default="scope">
           <enum-view :enum-name="'PutawayEnum'" :enum-value="scope.row.isPutaway" />
@@ -125,3 +131,11 @@
     sort: courseApi.courseSort
   })
 </script>
+
+<style scoped>
+  .table-secondary {
+    color: #909399;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+</style>

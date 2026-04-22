@@ -91,7 +91,7 @@
 
   // 查看数据
   const router = useRouter()
-  const canVisitWithdrawAudit = hasPermission('wallet:withdraw:audit:page') || hasPermission('user:record')
+  const canVisitWithdrawAudit = hasPermission('wallet:withdraw:audit:page')
   const toUserRecord = function (row, tabName) {
     router.push({ path: '/users/record', query: { userId: row.id, activeName: tabName } })
   }

@@ -27,11 +27,48 @@
       <el-descriptions-item label="Current Remark" :span="2">{{ formModel.failReason || formModel.remark || '-' }}</el-descriptions-item>
     </el-descriptions>
 
-    <el-form v-if="mode !== 'view'" ref="formRef" :model="formModel" :rules="rules" label-width="110px" style="margin-top: 20px" @submit.prevent>
+    <el-descriptions :column="2" border style="margin-top: 16px">
+      <el-descriptions-item label="Audit At">{{ formModel.auditAt || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="Audit Result">{{ formModel.auditResultLabel || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="Timeline" :span="2">{{ formModel.auditTimelineSummary || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="Wallet Replay" :span="2">{{ formModel.walletReplayHint || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="Android Replay" :span="2">{{ formModel.androidReplayHint || '-' }}</el-descriptions-item>
+    </el-descriptions>
+
+    <el-descriptions :column="3" border style="margin-top: 16px">
+      <el-descriptions-item label="Snapshot">Available</el-descriptions-item>
+      <el-descriptions-item label="Snapshot">Frozen</el-descriptions-item>
+      <el-descriptions-item label="Meaning">Description</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableBeforeApply) }}</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeBeforeApply) }}</el-descriptions-item>
+      <el-descriptions-item>Before apply</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.availableAmount) }}</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.freezeAmount) }}</el-descriptions-item>
+      <el-descriptions-item>Current</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableAfterApprove) }}</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeAfterApprove) }}</el-descriptions-item>
+      <el-descriptions-item>After approve</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableAfterReject) }}</el-descriptions-item>
+      <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeAfterReject) }}</el-descriptions-item>
+      <el-descriptions-item>After reject</el-descriptions-item>
+    </el-descriptions>
+
+    <el-form
+      v-if="mode !== 'view' && canEditAuditRemark"
+      ref="formRef"
+      :model="formModel"
+      :rules="rules"
+      label-width="110px"
+      style="margin-top: 20px"
+      @submit.prevent
+    >
       <el-form-item :label="remarkLabel" prop="auditRemark">
         <el-input v-model="formModel.auditRemark" type="textarea" :rows="4" maxlength="255" show-word-limit :placeholder="remarkPlaceholder" />
       </el-form-item>
     </el-form>
+    <div v-else-if="mode === 'pass'" class="audit-tip">
+      当前账号未分配“审核备注”权限，仍可继续更新提现状态。
+    </div>
 
     <template #footer>
       <span class="dialog-footer">
@@ -48,6 +85,7 @@
   import { computed, reactive, ref } from 'vue'
   import { ElMessage } from 'element-plus'
   import { usersApi } from '@/api/users'
+  import { hasPermission } from '@/utils/permission.js'
 
   const emit = defineEmits(['refresh'])
   const visible = ref(false)
@@ -73,7 +111,18 @@
     completedAt: '',
     remark: '',
     failReason: '',
-    auditRemark: ''
+    auditRemark: '',
+    estimatedAvailableBeforeApply: 0,
+    estimatedFreezeBeforeApply: 0,
+    estimatedAvailableAfterApprove: 0,
+    estimatedFreezeAfterApprove: 0,
+    estimatedAvailableAfterReject: 0,
+    estimatedFreezeAfterReject: 0,
+    auditAt: '',
+    auditResultLabel: '',
+    auditTimelineSummary: '',
+    androidReplayHint: '',
+    walletReplayHint: ''
   }
 
   const formModel = reactive({ ...formDefault })
@@ -113,6 +162,7 @@
   const remarkLabel = computed(() => (mode.value === 'reject' ? 'Reject Reason' : 'Audit Note'))
   const remarkPlaceholder = computed(() => (mode.value === 'reject' ? 'Please provide a reject reason' : 'Optional audit note'))
   const walletSummary = computed(() => `Available ${formatAmount(formModel.availableAmount)} / Frozen ${formatAmount(formModel.freezeAmount)}`)
+  const canEditAuditRemark = computed(() => mode.value === 'reject' || hasPermission('wallet:withdraw:audit:remark'))
 
   const onOpen = async (nextMode, item) => {
     Object.assign(formModel, formDefault)
@@ -124,8 +174,10 @@
   defineExpose({ onOpen })
 
   const onSubmit = async () => {
-    const valid = await formRef.value.validate()
-    if (!valid) return
+    if (canEditAuditRemark.value) {
+      const valid = await formRef.value.validate()
+      if (!valid) return
+    }
     if (loading.value) {
       ElMessage.warning('Processing...')
       return
@@ -198,3 +250,12 @@
     }
   }
 </script>
+
+<style scoped>
+  .audit-tip {
+    margin-top: 20px;
+    color: #909399;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+</style>

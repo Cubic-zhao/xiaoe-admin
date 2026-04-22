@@ -18,9 +18,11 @@
     </div>
     <el-table v-loading="page.loading" :data="page.list" row-key="id" class="drag-table">
       <el-table-column :min-width="100" label="名称" prop="navTitle" />
-      <el-table-column :min-width="100" label="导航地址" prop="navUrl">
+      <el-table-column :min-width="120" label="移动语义">
         <template #default="scope">
-          <el-link type="primary" :href="scope.row.navUrl" target="_blank">{{ scope.row.navUrl }}</el-link>
+          <div>{{ describeMobileOps(scope.row.navUrl).targetTypeLabel }} / {{ describeMobileOps(scope.row.navUrl).actionLabel }}</div>
+          <div style="color: #999; font-size: 12px">目标ID：{{ describeMobileOps(scope.row.navUrl).targetId }}</div>
+          <div style="color: #999; font-size: 12px">链接：{{ describeMobileOps(scope.row.navUrl).displayLink }}</div>
         </template>
       </el-table-column>
       <el-table-column :min-width="50" label="跳转方式">
@@ -70,6 +72,7 @@
   import Pagination from '@/components/Pagination/index.vue'
   import NavigationForm from './NavigationForm.vue'
   import EnumView from '@/components/Enum/View/index.vue'
+  import { describeMobileOps } from '@/utils/mobileOpsFieldAdapter'
 
   // 添加/修改
   const formRef = ref()
