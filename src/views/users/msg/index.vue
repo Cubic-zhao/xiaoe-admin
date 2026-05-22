@@ -7,6 +7,11 @@
           <el-input v-model="query.msgTitle" placeholder="消息标题" clearable />
           </el-form-item>
           <el-form-item>
+            <el-select v-model="query.remark" clearable placeholder="家教消息分类" style="width: 180px">
+              <el-option v-for="item in messageCategoryOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
             <el-select v-model="query.msgType" clearable placeholder="消息类型" style="width: 200px">
               <el-option v-for="item in msgTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
@@ -40,6 +45,12 @@
       <el-table-column label="类型" min-width="100">
         <template #default="scope">
           <el-tag effect="plain" :type="scope.row.msgType === 1 ? 'primary' : 'info'">{{ getMsgTypeLabel(scope.row.msgType) }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="家教分类" min-width="120">
+        <template #default="scope">
+          <el-tag v-if="scope.row.remark" effect="plain">{{ getMessageCategoryLabel(scope.row.remark) }}</el-tag>
+          <span v-else>-</span>
         </template>
       </el-table-column>
       <el-table-column label="内容" min-width="260" show-overflow-tooltip>
@@ -243,6 +254,13 @@
     { label: '是', sendLabel: '已发送', value: 1 },
     { label: '否', sendLabel: '待发送', value: 0 }
   ]
+  const messageCategoryOptions = [
+    { label: '约课提醒', value: 'booking' },
+    { label: '排课变更', value: 'schedule' },
+    { label: '上课记录', value: 'lesson' },
+    { label: '支付消息', value: 'payment' },
+    { label: '系统消息', value: 'system' }
+  ]
 
   const getMsgTypeLabel = (value) => {
     const target = msgTypeOptions.find((item) => item.value === value)
@@ -259,6 +277,10 @@
 
   const getBooleanTagType = (value) => {
     return value === 1 ? 'success' : 'info'
+  }
+
+  const getMessageCategoryLabel = (value) => {
+    return messageCategoryOptions.find((item) => item.value === value)?.label || value
   }
 
   const formRef = ref()

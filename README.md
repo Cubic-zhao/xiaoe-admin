@@ -1,8 +1,9 @@
 # XiaoE Web Admin
 
-> 更新时间：2026-03-29  
+> 更新时间：2026-04-28（与三端文档结构治理同步）  
 > 当前定位：XiaoE 三端体系中的后台管理端  
-> 对应后端面：`/system/admin/**`、`/user/admin/**`、`/course/admin/**`
+> 对应后端面：`/system/admin/**`、`/user/admin/**`、`/course/admin/**`  
+> 仓库路径：`D:/MyProject/Program/XiaoE/Xiaoe-education-release/xiaoe-education-admin`
 
 ## 1. 项目定位
 
@@ -129,3 +130,43 @@ npm run dev
 ```bash
 npm run build
 ```
+
+> **本地联调**：`npm run dev` 默认监听 `:9528`，并将 `/gateway/**` 代理到 `http://localhost:7700`（后端 Gateway）。生产部署使用 `nginx.conf` 同样的 `/gateway/` 反代规则。
+
+---
+
+## 10. 仓内文档导航（2026-04-28）
+
+| 文档 | 作用 | 状态 |
+|---|---|---|
+| `README.md`（本文） | 仓库入口、技术栈、运行链概览 | ✅ 2026-04-28 与三端治理同步 |
+| `10_Web端项目全面完整信息文档_2026-04-11.md` | Web 端全面信息基线（已加 13 节复验补记） | ✅ 2026-04-28 已对齐 |
+| `20_Web端功能完善开发计划_上线运营版.md` | 上线开发计划（已加 10 节复验补记） | ✅ 2026-04-28 已对齐 |
+| `30_Web端与后端v2.0治理对齐说明.md` | 110 API 端点矩阵 + admin 契约 + 与后端 Controller 对应 | ✅ 2026-04-28 本日新建 |
+
+> Web 端文档**不归档不删除**任何历史文档。本轮只做：路径修正 + 复验补记 + 新增 30 号契约对齐文档。所有 src/ 代码**未变动**。
+
+---
+
+## 11. 与三端的关联文档
+
+| 端 | 仓库 | 关键文档 |
+|---|---|---|
+| 后端 | `xiaoe-education-master/` | `docs/12_后端接口分层治理与迁移开发方案.md`（admin 面契约源头）/ `docs/05_service模块.md`（93 Controller 索引）/ `docs/04_gateway模块.md`（路由）/ `docs/07_系统部署与升级.md`（部署门禁） |
+| Android | `xiaoe-education-android/` | `docs/22_项目基础信息与关键信息归档.md`（三端入口）/ `docs/24_Android端与后端v2.0治理对齐说明.md`（mobile 面契约对齐） |
+| Web（本仓） | `xiaoe-education-admin/` | `30_Web端与后端v2.0治理对齐说明.md`（admin 面契约对齐） |
+| iOS | `xiaoe-education-ios/`（占位） | 工程暂未启动 |
+| 工作区根 | `Xiaoe-education-release/` | `AGENTS.md`（任意 AI agent 进入工作区前必读） |
+
+---
+
+## 12. 与后端契约的硬约束（不可违反）
+
+1. **路径前缀**：管理端**只**走 `/{system\|user\|course}/admin/**`，不调 mobile 面，不调 feign 面
+2. **Token Header**：`token`（不带 `Bearer ` 前缀），存于 cookie key `EDU_OS_ADMIN_TOKEN`
+3. **包装体**：响应必为 `Result<T>`（3 字段：`code` / `msg` / `data`）
+4. **错误码**：`200` 成功 / `301` Token 过期 / `302~305` Token 异常 / `306` 权限不足
+5. **legacy api 面只 3 个端点**：`/system/api/sys/config/website`、`/system/api/common/code`、`/system/api/common/enum`，**不得新增**
+6. **新页面**：必须复用 `src/api/*.js` + `views/*/index.vue` CRUD 模式，不得直接使用原始 axios
+
+详见 `30_Web端与后端v2.0治理对齐说明.md` 第 4 章。

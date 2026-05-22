@@ -1,11 +1,13 @@
 <!-- markdownlint-disable MD013 MD024 MD033 -->
 # Web端功能完善开发计划（上线运营版）
 
-**文档版本**：v1.0  
-**创建日期**：2026-04-11  
-**适用项目**：`D:/MyProject/Program/XiaoE/Web/xiaoe-education-admin-2025.2`  
-**对齐基准**：`19_三端完整开发与执行清单_优化版.md`（v9.5）  
-**目标标准**：以“正式上线、可持续运营、可审计可追溯”为验收标准
+**文档版本**：v1.0（2026-04-11） + 2026-04-28 治理复验补记
+**创建日期**：2026-04-11
+**适用项目**：`D:/MyProject/Program/XiaoE/Xiaoe-education-release/xiaoe-education-admin`
+**对齐基准**：`xiaoe-education-android/docs/19_三端完整开发与执行清单_优化版.md`（已升级到 v10.13）
+**目标标准**：以"正式上线、可持续运营、可审计可追溯"为验收标准
+
+> **2026-04-28 修订**：原适用项目路径 `D:/MyProject/Program/XiaoE/Web/xiaoe-education-admin-2025.2` 已停用，迁入 release 仓后 Web 端归口 `xiaoe-education-admin/` 子仓。原对齐基准 19 号文档 v9.5 已升级到 v10.13，本计划 4.x 任务清单结构未受影响，详见末尾"2026-04-28 治理复验补记"。
 
 ---
 
@@ -284,3 +286,83 @@
 ---
 
 **结论**：当前 Web 端基础框架与核心模块已具备上线雏形，但距离“正式运营级”还差关键治理能力（移动语义字段、Teacher策略显式控制、异常治理视图、发布门禁执行化）。本计划已按现状给出可直接执行的模块化开发路径，可作为 Web 端上线唯一执行计划。
+
+---
+
+## 10. 2026-04-28 治理复验补记
+
+> **背景**：本轮三端文档结构治理（后端 02-05/07/18 v2.0 重写 + Android 22/24 治理对齐）已完成，Web 端同步进行实地代码勘察与文档治理同步。本补记仅修正基准、记录工具落地、不变更任务清单结构。
+
+### 10.1 项目路径与对齐基准修正
+
+| 项 | 原（v1.0 2026-04-11） | 修正后（2026-04-28） |
+|---|---|---|
+| 适用项目路径 | `D:/MyProject/Program/XiaoE/Web/xiaoe-education-admin-2025.2` | `D:/MyProject/Program/XiaoE/Xiaoe-education-release/xiaoe-education-admin` |
+| 19 号对齐基准 | v9.5 | v10.13（位于 `xiaoe-education-android/docs/`） |
+| 后端契约源头 | （文中未明确） | `xiaoe-education-master/docs/12_后端接口分层治理与迁移开发方案.md` |
+| 后端 Controller 索引 | （文中未明确） | `xiaoe-education-master/docs/05_service模块.md`（v2.0） |
+
+### 10.2 治理工具落地状态确认
+
+实地勘察结果，**WEB-01** 与 **WEB-06** 已部分落代码层：
+
+| 任务 | 文档计划 | 实地落地证据 | 落地状态 |
+|---|---|---|---|
+| **WEB-01** 字段模型统一 `targetType/targetId/link/action/sort/status` | 4.2 节第 1 步 | `src/utils/mobileOpsFieldAdapter.js` 162 行（含 decode/encode/normalize/validate 5 函数） | 🟡 工具已就绪，**待 4.2 节第 2-5 步联调闭环** |
+| **WEB-06** 四件套模板（灰度 / 监控 / 回滚 / 签核） | 4.7 节第 1 步 | `src/utils/releaseGateTemplate.js` 21 行（5 字段 + 校验函数） | 🟡 模板已就绪，**待 4.7 节第 2-5 步流程闭环** |
+| **WEB-02** Teacher 策略 | 4.3 节 | （未找到对应工具或配置项） | ⏸ 待开发 |
+| **WEB-03/04/05** | 4.4-4.6 节 | （未找到专用工具） | ⏸ 待开发 |
+
+> **说明**：🟡 表示工具层已落地但流程闭环未完成；不能直接将 WEB-01/06 标记为"已完成"，仍需补 UI/联调/证据三件套。
+
+### 10.3 API 契约对齐结论（实地勘察补充）
+
+本计划文中说"Axios 注入 token"，2026-04-28 实地勘察补充以下精确事实：
+
+| 项 | 实地代码证据 | 路径 |
+|---|---|---|
+| Token Header | `config.headers['token'] = token`（不带 Bearer） | `src/utils/request.js:22` |
+| Token Cookie Key | `EDU_OS_ADMIN_TOKEN` | `src/utils/constants/system.js:11` |
+| baseURL | `/gateway`（开发用 vite proxy，生产用 nginx location） | `src/utils/constants/system.js:8` + `vite.config.js:13-17` + `nginx.conf:23-25` |
+| API 端点总数 | 110（admin 面 107 + legacy api 面 3：`website` / `code` / `enum`） | `src/api/{login,system,course,users,dashboard,upload}.js` |
+| 错误码处理 | 200 / 301 token 过期 / 302~305 登录异常 / 306 权限不足 | `src/utils/request.js:48-86` |
+
+完整 110 端点 ↔ 后端 Controller 对应矩阵详见 **30 号文档**。
+
+> **⚠️ 数据时效性提醒（2026-05-01）**：本节 110 数字为 2026-04-28 快照，已过期。`src/api/*.js` 自快照后 W2-W3 期间新增 22 个 axios 调用，**2026-05-01 实测真值为 132**（admin 129 + legacy api 3）。完整真值清单与差异分析见 30 号文档 **§11 数据校准补记**。本计划任务清单（4.x 节）**不受本数字偏差影响**，照常推进。
+
+### 10.4 阶段排期不变，但门禁规则修订
+
+本计划阶段 A/B/C 排期 **保持不变**，但补充以下门禁规则：
+
+1. **阶段 A 出口**：`T-HOME-OPS-001` / `T-TEACHER-OPS-001` / `T-OPS-GATE-001` 必须通过；其中 `T-HOME-OPS-001` 与 `T-OPS-GATE-001` 工具已就绪，重点是流程闭环
+2. **阶段 B 出口**：`T-WALLET-001` / `T-ORDER-ANOMALY-001` / `T-MSG-001` 必须通过
+3. **阶段 C 出口**：必须满足 `xiaoe-education-master/docs/07_系统部署与升级.md` v2.0 第 5 章定义的 7 项部署门禁
+
+### 10.5 与三端文档的交叉引用
+
+| 主题 | 关联文档 |
+|---|---|
+| Web 端 110 API 端点 ↔ 后端 Controller 对应矩阵 | `30_Web端与后端v2.0治理对齐说明.md`（**本日新建**） |
+| Web 端项目全面信息 | `10_Web端项目全面完整信息文档_2026-04-11.md`（已加 13 节复验补记） |
+| 三端任务执行清单 | `xiaoe-education-android/docs/19_三端完整开发与执行清单_优化版.md`（v10.13） |
+| Android 端契约对齐 | `xiaoe-education-android/docs/24_Android端与后端v2.0治理对齐说明.md` |
+| 后端 admin 面契约源头 | `xiaoe-education-master/docs/12_后端接口分层治理与迁移开发方案.md` |
+| 后端 service Controller 索引 | `xiaoe-education-master/docs/05_service模块.md`（v2.0） |
+| 后端部署门禁 | `xiaoe-education-master/docs/07_系统部署与升级.md`（v2.0） |
+
+### 10.6 仍需复验项
+
+| # | 项目 | 阻塞原因 | 解除条件 |
+|---|---|---|---|
+| 1 | WEB-01 流程闭环 | 工具就绪，UI/联调/证据待补 | 完成 4.2 节第 2-5 步 + Android 端联调录屏 |
+| 2 | WEB-06 流程闭环 | 模板就绪，落库 / 历史追溯 / 演练待补 | 完成 4.7 节第 2-5 步 + 1 次完整灰度回滚演练 |
+| 3 | WEB-02 Teacher 策略 | 未开发 | 4.3 节全部任务 |
+| 4 | WEB-03/04/05 | 未开发 | 4.4-4.6 节全部任务 |
+| 5 | 阶段 C 部署门禁 | 后端环境未达标 | 见 16 号文档六周计划（在 `xiaoe-education-master/docs/`） |
+
+---
+
+**本文版本历史**：
+- v1.0（2026-04-11）：基线创建
+- 2026-04-28：治理复验补记追加（路径修正 + 工具落地状态 + 跨端引用）

@@ -213,5 +213,24 @@ export const systemApi = {
   // 系统日志
   sysLogPage: (data) => {
     return postRequest('/system/admin/sys/log/page', data)
+  },
+
+  faqPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/system/admin/faq/page', { pageCurrent, pageSize, ...params })
+  },
+  faqView: (data) => {
+    return getRequest('/system/admin/faq/view?id=' + data.id)
+  },
+  faqSave: (data) => {
+    return postRequest('/system/admin/faq/save', data)
+  },
+  faqEdit: (data) => {
+    return putRequest('/system/admin/faq/edit', data)
+  },
+  faqSort: (data) => {
+    return putRequest('/system/admin/faq/sort', data)
+  },
+  faqDelete: (data) => {
+    return deleteRequest('/system/admin/faq/delete?id=' + data.id)
   }
 }

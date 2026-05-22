@@ -229,5 +229,24 @@ export const courseApi = {
    */
   resourceLibraryPreview: (data) => {
     return getRequest('/course/admin/resource/preview?id=' + data.id)
+  },
+
+  lessonPackagePage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/course/admin/lesson/package/page', { pageCurrent, pageSize, ...params })
+  },
+  lessonPackageView: (data) => {
+    return getRequest('/course/admin/lesson/package/view?id=' + data.id)
+  },
+  lessonPackageSave: (data) => {
+    return postRequest('/course/admin/lesson/package/save', data)
+  },
+  lessonPackageEdit: (data) => {
+    return putRequest('/course/admin/lesson/package/edit', data)
+  },
+  lessonPackageSort: (data) => {
+    return putRequest('/course/admin/lesson/package/sort', data)
+  },
+  lessonPackageDelete: (data) => {
+    return deleteRequest('/course/admin/lesson/package/delete?id=' + data.id)
   }
 }

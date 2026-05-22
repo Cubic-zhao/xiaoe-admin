@@ -123,5 +123,71 @@ export const usersApi = {
   // message delivery page
   msgUserPage: (params, pageCurrent = 1, pageSize = 20) => {
     return postRequest('/user/admin/msg/user/page', { pageCurrent, pageSize, ...params })
+  },
+
+  tutorQualificationPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/tutor/qualification/page', { pageCurrent, pageSize, ...params })
+  },
+  tutorQualificationView: (data) => {
+    return getRequest('/user/admin/tutor/qualification/view?id=' + data.id)
+  },
+  tutorQualificationApprove: (data) => {
+    return putRequest('/user/admin/tutor/qualification/approve', data)
+  },
+  tutorQualificationReject: (data) => {
+    return putRequest('/user/admin/tutor/qualification/reject', data)
+  },
+  tutorIntroPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/tutor/intro/page', { pageCurrent, pageSize, ...params })
+  },
+  tutorIntroEdit: (data) => {
+    return putRequest('/user/admin/tutor/intro/edit', data)
+  },
+  tutorOperationPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/tutor/operation/page', { pageCurrent, pageSize, ...params })
+  },
+  tutorOperationConfig: (data) => {
+    return putRequest('/user/admin/tutor/operation/config', data)
+  },
+
+  bookingPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/booking/page', { pageCurrent, pageSize, ...params })
+  },
+  bookingView: (data) => {
+    return getRequest('/user/admin/booking/view?id=' + data.id)
+  },
+  bookingCancel: (data) => {
+    return putRequest('/user/admin/booking/cancel', data)
+  },
+  schedulePage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/schedule/page', { pageCurrent, pageSize, ...params })
+  },
+  scheduleAdjust: (data) => {
+    return putRequest('/user/admin/schedule/adjust', data)
+  },
+  lessonRecordView: (data) => {
+    return getRequest('/user/admin/lesson/record/view?scheduleId=' + data.scheduleId)
+  },
+  tutorRelationPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/tutor/relation/page', { pageCurrent, pageSize, ...params })
+  },
+  tutorRelationProgress: (data) => {
+    return getRequest('/user/admin/tutor/relation/progress?relationId=' + data.relationId)
+  },
+
+  feedbackPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/feedback/page', { pageCurrent, pageSize, ...params })
+  },
+  feedbackView: (data) => {
+    return getRequest('/user/admin/feedback/view?id=' + data.id)
+  },
+  feedbackReply: (data) => {
+    return putRequest('/user/admin/feedback/reply', data)
+  },
+  feedbackClose: (data) => {
+    return putRequest('/user/admin/feedback/close', data)
+  },
+  feedbackReopen: (data) => {
+    return putRequest('/user/admin/feedback/reopen', data)
   }
 }

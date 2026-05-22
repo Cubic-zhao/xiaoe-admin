@@ -7,6 +7,11 @@
           <el-radio :value="2">Other</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="Category" prop="remark">
+        <el-select v-model="formModel.remark" clearable placeholder="Mobile category" style="width: 100%">
+          <el-option v-for="item in messageCategoryOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
       <el-form-item class="form-group" label="Title" prop="msgTitle">
         <el-input v-model="formModel.msgTitle" maxlength="100" show-word-limit />
       </el-form-item>
@@ -40,9 +45,6 @@
       <el-form-item class="form-group" label="Content" prop="msgText">
         <el-input v-model="formModel.msgText" maxlength="2000" show-word-limit type="textarea" :rows="6" />
       </el-form-item>
-      <el-form-item class="form-group" label="Remark" prop="remark">
-        <el-input v-model="formModel.remark" maxlength="255" show-word-limit type="textarea" :rows="3" />
-      </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -60,6 +62,13 @@
   import EnumRadio from '@/components/Enum/Radio/index.vue'
 
   const formRef = ref()
+  const messageCategoryOptions = [
+    { label: '约课提醒', value: 'booking' },
+    { label: '排课变更', value: 'schedule' },
+    { label: '上课记录', value: 'lesson' },
+    { label: '支付消息', value: 'payment' },
+    { label: '系统消息', value: 'system' }
+  ]
   const rules = {
     msgType: [{ required: true, message: 'Required', trigger: 'change' }],
     msgTitle: [{ required: true, message: 'Required', trigger: 'blur' }],
