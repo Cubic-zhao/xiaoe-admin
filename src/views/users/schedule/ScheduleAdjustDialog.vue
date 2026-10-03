@@ -73,5 +73,5 @@
     visible.value = false
   }
 
-  const formatTime = (value) => (value ? new Date(value).toLocaleString() : '-')
+  const formatTime = (value) => (value ? new Date(Number(value)).toLocaleString() : '-')
 </script>

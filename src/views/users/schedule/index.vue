@@ -4,13 +4,13 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item label="约课ID">
-            <el-input-number v-model="query.bookingId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.bookingId" clearable />
           </el-form-item>
           <el-form-item label="学生ID">
-            <el-input-number v-model="query.userId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.userId" clearable />
           </el-form-item>
           <el-form-item label="讲师ID">
-            <el-input-number v-model="query.teacherId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.teacherId" clearable />
           </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="query.status" clearable style="width: 140px">
@@ -88,11 +88,11 @@
 
   const adjustRef = ref()
   const route = useRoute()
+  const routeBookingId = Array.isArray(route.query.bookingId) ? route.query.bookingId[0] : route.query.bookingId
   const { page, handlePage, query, handleQuery, resetQuery } = useTable({
     page: usersApi.schedulePage
-  }, {
-    bookingId: route.query.bookingId ? Number(route.query.bookingId) : undefined
   })
+  query.bookingId = routeBookingId || ''
 
   const scheduleStatuses = [
     { label: '已确认', value: 'confirmed' },
@@ -107,7 +107,7 @@
   }
   const scheduleStatusType = (value) => ({ confirmed: 'primary', waiting: 'warning', in_progress: 'primary', completed: 'success', canceled: 'info' })[value] || 'info'
   const deliveryModeLabel = (value) => ({ onsite: '上门', online: '线上', both: '两种均可' })[value] || value || '-'
-  const formatTime = (value) => (value ? new Date(value).toLocaleString() : '-')
+  const formatTime = (value) => (value ? new Date(Number(value)).toLocaleString() : '-')
 </script>
 
 <style scoped>

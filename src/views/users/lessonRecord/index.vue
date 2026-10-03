@@ -4,13 +4,13 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item label="约课ID">
-            <el-input-number v-model="query.bookingId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.bookingId" clearable />
           </el-form-item>
           <el-form-item label="学生ID">
-            <el-input-number v-model="query.userId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.userId" clearable />
           </el-form-item>
           <el-form-item label="讲师ID">
-            <el-input-number v-model="query.teacherId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.teacherId" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleQuery()">查询</el-button>
@@ -88,6 +88,7 @@
   import Pagination from '@/components/Pagination/index.vue'
 
   const route = useRoute()
+  const routeBookingId = Array.isArray(route.query.bookingId) ? route.query.bookingId[0] : route.query.bookingId
   const visible = ref(false)
   const detail = reactive({})
   const recordRef = {
@@ -104,10 +105,10 @@
       page: usersApi.schedulePage
     },
     {
-      status: 'completed',
-      bookingId: route.query.bookingId ? Number(route.query.bookingId) : undefined
+      status: 'completed'
     }
   )
+  query.bookingId = routeBookingId || ''
 
   const onClose = () => {
     Object.keys(detail).forEach((key) => delete detail[key])
@@ -116,7 +117,7 @@
 
   const scheduleStatusLabel = (value) => ({ confirmed: '已确认', waiting: '等待中', in_progress: '进行中', completed: '已完成', canceled: '已取消' })[value] || value || '-'
   const scheduleStatusType = (value) => ({ confirmed: 'primary', waiting: 'warning', in_progress: 'primary', completed: 'success', canceled: 'info' })[value] || 'info'
-  const formatTime = (value) => (value ? new Date(value).toLocaleString() : '-')
+  const formatTime = (value) => (value ? new Date(Number(value)).toLocaleString() : '-')
 </script>
 
 <style scoped>

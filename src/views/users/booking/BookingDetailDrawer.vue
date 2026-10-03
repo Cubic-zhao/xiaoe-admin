@@ -49,5 +49,5 @@
   const statusType = (value) => ({ pending_pay: 'warning', paid: 'primary', in_progress: 'primary', completed: 'success', canceled: 'info' })[value] || 'info'
   const deliveryModeLabel = (value) => ({ onsite: '上门', online: '线上', both: '两种均可' })[value] || value || '-'
   const formatAmount = (value) => Number(value || 0).toFixed(2)
-  const formatTime = (value) => (value ? new Date(value).toLocaleString() : '-')
+  const formatTime = (value) => (value ? new Date(Number(value)).toLocaleString() : '-')
 </script>

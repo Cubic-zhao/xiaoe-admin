@@ -4,7 +4,7 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item label="课程ID">
-            <el-input-number v-model="query.courseId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.courseId" clearable />
           </el-form-item>
           <el-form-item label="上课方式">
             <el-select v-model="query.deliveryMode" clearable style="width: 140px">

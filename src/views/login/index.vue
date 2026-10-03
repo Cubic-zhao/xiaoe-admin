@@ -26,7 +26,6 @@
             <img class="var-img" :src="verImg" alt="" @click="getCaptcha" />
           </el-form-item>
           <el-button class="login-button" type="primary" @click="handleLogin">登 录</el-button>
-          <div class="tip">账号：18800000000/123456（需要本地部署）</div>
         </el-form>
       </div>
     </div>
@@ -71,8 +70,8 @@
 
   // 登录
   const loginForm = reactive({
-    mobile: '13300000000',
-    mobilePwd: '123456',
+    mobile: '',
+    mobilePwd: '',
     verCode: '',
     verToken: ''
   })
@@ -90,6 +89,11 @@
   }
 
   async function handleLogin() {
+    if (loading.value) return
+    if (!loginForm.mobile || !loginForm.mobilePwd) {
+      ElMessage.error('请输入用户名和密码')
+      return
+    }
     if (!loginForm.verCode) {
       ElMessage.error('请输入验证码')
       return
@@ -182,10 +186,6 @@
         cursor: pointer;
       }
 
-      .tip {
-        margin-top: 20px;
-        font-size: 14px;
-      }
     }
   }
 
@@ -221,5 +221,36 @@
 
   .el-input {
     height: 40px;
+  }
+
+  @media (max-width: 840px), (max-height: 680px) {
+    .login-container {
+      min-height: 100vh;
+      height: auto;
+      padding: 24px 16px;
+      box-sizing: border-box;
+    }
+
+    .login-content {
+      position: static;
+      width: 100%;
+      max-width: 400px;
+
+      .login-info { display: none; }
+
+      .login-panel {
+        float: none;
+        width: 100%;
+        height: auto;
+        min-height: 400px;
+        box-sizing: border-box;
+        border-radius: 8px;
+
+        .login-button { width: 100%; }
+      }
+    }
+
+    .var-input { width: calc(100% - 100px); }
+    .footer { position: static; margin-top: 24px; overflow-wrap: anywhere; }
   }
 </style>

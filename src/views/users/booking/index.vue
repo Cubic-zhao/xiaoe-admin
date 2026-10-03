@@ -4,10 +4,10 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item label="学生ID">
-            <el-input-number v-model="query.userId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.userId" clearable />
           </el-form-item>
           <el-form-item label="讲师ID">
-            <el-input-number v-model="query.teacherId" :min="1" controls-position="right" clearable />
+            <el-input v-model="query.teacherId" clearable />
           </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="query.status" clearable style="width: 140px">
@@ -120,7 +120,7 @@
   const bookingStatusType = (value) => ({ pending_pay: 'warning', paid: 'primary', in_progress: 'primary', completed: 'success', canceled: 'info' })[value] || 'info'
   const deliveryModeLabel = (value) => ({ onsite: '上门', online: '线上', both: '两种均可' })[value] || value || '-'
   const formatAmount = (value) => Number(value || 0).toFixed(2)
-  const formatTime = (value) => (value ? new Date(value).toLocaleString() : '-')
+  const formatTime = (value) => (value ? new Date(Number(value)).toLocaleString() : '-')
 </script>
 
 <style scoped>

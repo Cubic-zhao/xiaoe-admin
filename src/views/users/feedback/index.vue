@@ -4,7 +4,7 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item label="用户ID">
-            <el-input-number v-model="query.userId" :min="1" controls-position="right" />
+            <el-input v-model="query.userId" clearable />
           </el-form-item>
           <el-form-item label="类型">
             <el-input v-model="query.category" clearable placeholder="反馈类型" />
