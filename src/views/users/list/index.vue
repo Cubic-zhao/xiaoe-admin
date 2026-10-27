@@ -17,15 +17,15 @@
       <el-table-column label="手机号码" :min-width="40" prop="mobile" />
       <el-table-column label="用户信息" :min-width="60">
         <template #default="scope">
-          <img :alt="scope.row.nickname" :src="scope.row.userHead" style="height: 40px; width: auto; border-radius: 50%; vertical-align: middle" />
+          <el-avatar :src="scope.row.userHead">{{ scope.row.nickname?.slice(0, 1) || '学' }}</el-avatar>
           &nbsp;{{ scope.row.nickname }}
         </template>
       </el-table-column>
       <el-table-column :min-width="60" label="账户">
         <template #default="scope">
-          <span>余额：￥{{ scope.row.usersAccountViewResp?.availableAmount }}元</span>
+          <span>余额：{{ scope.row.usersAccountViewResp ? `￥${scope.row.usersAccountViewResp.availableAmount}元` : '账户未开通' }}</span>
           <br />
-          <span>冻结：￥{{ scope.row.usersAccountViewResp?.freezeAmount }}元</span>&nbsp;
+          <span>冻结：{{ scope.row.usersAccountViewResp ? `￥${scope.row.usersAccountViewResp.freezeAmount}元` : '账户未开通' }}</span>&nbsp;
           <el-button v-permission="'user:record'" link @click="toUserRecord(scope.row, 'account')">查看明细</el-button>
         </template>
       </el-table-column>

@@ -68,8 +68,8 @@
         <el-descriptions-item label="课堂记录">{{ detail.record?.note || '-' }}</el-descriptions-item>
         <el-descriptions-item label="作业">{{ detail.record?.homework || '-' }}</el-descriptions-item>
         <el-descriptions-item label="作业截止">{{ formatTime(detail.record?.homeworkDueAt) }}</el-descriptions-item>
-        <el-descriptions-item label="学生评分">{{ detail.record?.studentRating || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="学生评价">{{ detail.record?.studentReview || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="学员表现评分">{{ detail.record?.studentRating || '未评分' }}</el-descriptions-item>
+        <el-descriptions-item label="老师评语">{{ detail.record?.studentReview || '-' }}</el-descriptions-item>
       </el-descriptions>
       <el-table :data="detail.record?.attachments || []" style="margin-top: 16px">
         <el-table-column label="附件">
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { usersApi } from '@/api/users'
   import useTable from '@/utils/table'
@@ -109,6 +109,10 @@
     }
   )
   query.bookingId = routeBookingId || ''
+  watch(() => route.query.bookingId, (value) => {
+    query.bookingId = (Array.isArray(value) ? value[0] : value) || ''
+    handleQuery()
+  })
 
   const onClose = () => {
     Object.keys(detail).forEach((key) => delete detail[key])

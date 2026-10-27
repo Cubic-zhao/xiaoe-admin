@@ -1,11 +1,13 @@
 /**
  * 表单封装
  */
-import { onMounted, reactive } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import Sortable from 'sortablejs'
 
 export default function useTable(apis, paras = {}) {
+  let requestId = 0
+  let sortable
   // 分页对象
   const page = reactive({
     pageCurrent: 1,
@@ -18,6 +20,7 @@ export default function useTable(apis, paras = {}) {
   // 分页查询
   const handlePage = async () => {
     if (apis.page) {
+      const current = ++requestId
       page.loading = true
       try {
         const res = await apis.page({
@@ -26,16 +29,23 @@ export default function useTable(apis, paras = {}) {
           ...paras,
           ...query
         })
+        if (current !== requestId) return
         if (res) {
-          page.list = res.list || res || []
-          page.totalCount = res.totalCount || 0
+          page.list = Array.isArray(res) ? res : res.list || []
+          page.totalCount = Array.isArray(res) ? res.length : res.totalCount ?? 0
+          page.pageCurrent = res.pageCurrent ?? page.pageCurrent
 
           if (apis.sort) {
             await handleSort()
           }
         }
+      } catch (error) {
+        if (current !== requestId || error?.code === 'ERR_CANCELED') return
+        page.list = []
+        page.totalCount = 0
+        ElMessage.error(error?.response?.data?.msg || '数据读取失败，请重新查询')
       } finally {
-        page.loading = false
+        if (current === requestId) page.loading = false
       }
     }
   }
@@ -47,7 +57,7 @@ export default function useTable(apis, paras = {}) {
   const handleQuery = () => {
     page.pageCurrent = 1
     // 分页查询
-    handlePage()
+    return handlePage()
   }
 
   // 重置
@@ -83,9 +93,10 @@ export default function useTable(apis, paras = {}) {
     page.loading = true
     try {
       if (apis.status) {
-        row.statusId = row.statusId ? 0 : 1
-        const res = await apis.status({ id: row.id, statusId: row.statusId })
-        ElMessage.success({ message: res.msg ? res.msg : '操作成功' })
+        const statusId = row.statusId ? 0 : 1
+        const res = await apis.status({ id: row.id, statusId })
+        row.statusId = statusId
+        ElMessage.success({ message: res?.msg || '操作成功' })
       }
     } finally {
       page.loading = false
@@ -94,8 +105,11 @@ export default function useTable(apis, paras = {}) {
 
   // 排序
   const handleSort = async () => {
+    await nextTick()
+    sortable?.destroy()
     const tbody = document.querySelector('.drag-table .el-table__body-wrapper tbody')
-    Sortable.create(tbody, {
+    if (!tbody) return
+    sortable = Sortable.create(tbody, {
       onEnd({ oldIndex, newIndex }) {
         const row = page.list.splice(oldIndex, 1)[0]
         page.list.splice(newIndex, 0, row)
@@ -114,6 +128,7 @@ export default function useTable(apis, paras = {}) {
 
   // 获取数据
   onMounted(handlePage)
+  onBeforeUnmount(() => { requestId++; sortable?.destroy() })
 
   return {
     page,

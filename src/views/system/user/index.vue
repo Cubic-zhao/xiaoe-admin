@@ -4,47 +4,47 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item>
-            <el-input v-model="query.mobile" placeholder="Login account" clearable />
+            <el-input v-model="query.mobile" placeholder="登录账号" clearable />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleQuery()">Search</el-button>
-            <el-button @click="resetQuery()">Reset</el-button>
+            <el-button type="primary" @click="handleQuery()">查询</el-button>
+            <el-button @click="resetQuery()">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="button_bar">
-        <el-button v-if="canSaveUser" type="primary" @click="openFormModal()">Add Account</el-button>
+        <el-button v-if="canSaveUser" type="primary" @click="openFormModal()">新增账号</el-button>
       </div>
     </div>
 
     <el-table v-loading="page.loading" :data="page.list" row-key="id" class="drag-table">
-      <el-table-column label="Login Account" prop="mobile" />
-      <el-table-column label="Display Name" prop="realName" />
-      <el-table-column label="Roles" min-width="220">
+      <el-table-column label="登录账号" prop="mobile" />
+      <el-table-column label="显示名称" prop="realName" />
+      <el-table-column label="角色" min-width="220">
         <template #default="scope">
           <el-tag v-for="(item, index) in scope.row.roleNameList" :key="index" class="role-tag">{{ item }}</el-tag>
-          <span v-if="!scope.row.roleNameList || !scope.row.roleNameList.length" class="table-secondary">No roles</span>
+          <span v-if="!scope.row.roleNameList || !scope.row.roleNameList.length" class="table-secondary">未分配角色</span>
         </template>
       </el-table-column>
-      <el-table-column label="Remark" prop="remark" show-overflow-tooltip />
-      <el-table-column label="Status" width="100">
+      <el-table-column label="备注" prop="remark" show-overflow-tooltip />
+      <el-table-column label="状态" width="100">
         <template #default="scope">
           <enum-view :enum-name="'StatusIdEnum'" :enum-value="scope.row.statusId" />
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="360" fixed="right">
+      <el-table-column label="操作" width="360" fixed="right">
         <template #default="scope">
-          <el-button v-if="canEditUser" text type="primary" @click="openFormModal(scope.row)">Edit</el-button>
+          <el-button v-if="canEditUser" text type="primary" @click="openFormModal(scope.row)">编辑</el-button>
 
           <el-divider v-if="canEditUser && canSetUserRole" direction="vertical" />
 
-          <el-button v-if="canSetUserRole" text type="primary" @click="openRoleModal(scope.row)">Assign Roles</el-button>
+          <el-button v-if="canSetUserRole" text type="primary" @click="openRoleModal(scope.row)">分配角色</el-button>
 
           <el-divider v-if="canManageMore" direction="vertical" />
 
           <el-dropdown v-if="canManageMore">
             <el-button text type="primary">
-              More
+              更多
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -52,13 +52,13 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item v-if="canUpdatePassword" @click="openPasswordModal(scope.row)">
-                  <span>Password</span>
+                  <span>重置密码</span>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="canEditUser" @click="handleStatus(scope.row)">
-                  <span>{{ scope.row.statusId === 0 ? 'Enable' : 'Disable' }}</span>
+                  <span>{{ scope.row.statusId === 0 ? '启用' : '禁用' }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="canDeleteUser" @click="handleDelete(scope.row)">
-                  <span>Delete</span>
+                  <span>删除</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>

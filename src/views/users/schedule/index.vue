@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { usersApi } from '@/api/users'
   import useTable from '@/utils/table'
@@ -93,6 +93,10 @@
     page: usersApi.schedulePage
   })
   query.bookingId = routeBookingId || ''
+  watch(() => route.query.bookingId, (value) => {
+    query.bookingId = (Array.isArray(value) ? value[0] : value) || ''
+    handleQuery()
+  })
 
   const scheduleStatuses = [
     { label: '已确认', value: 'confirmed' },

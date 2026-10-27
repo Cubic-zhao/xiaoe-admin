@@ -1,7 +1,6 @@
 <template>
   <el-dialog :append-to-body="true" :model-value="props.visible" :title="props.title" width="1000px" align-center :destroy-on-close="true" @close="handleClose">
     <el-tabs v-if="props.resourceType === 0" v-model="activeName" @tab-click="handleTablClick">
-      <el-tab-pane :key="0" :label="'全部'" :name="0" />
       <el-tab-pane v-for="item in tabPanes" :key="item.code" :label="item.desc" :name="item.code" />
     </el-tabs>
     <el-form :model="query" class="filter-container" inline label-width="100px">
@@ -132,10 +131,12 @@
     emit('close', itemList.value)
   }
 
-  const activeName = ref(props.resourceType)
+  const activeName = ref(props.resourceType === 0 ? 3 : props.resourceType)
   const tabPanes = ref()
   onMounted(async () => {
-    tabPanes.value = await getEnumList('ResourceTypeEnum')
+    tabPanes.value = (await getEnumList('ResourceTypeEnum')).filter((item) => Number(item.code) >= 3)
+    query.resourceType = activeName.value
+    handlePage()
   })
   const handleTablClick = (tab) => {
     activeName.value = tab.props.name

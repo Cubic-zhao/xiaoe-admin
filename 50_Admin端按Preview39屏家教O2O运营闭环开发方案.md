@@ -373,7 +373,7 @@ Admin 开发出现口径冲突时，按以下顺序处理：
 | `user:feedback:reply` | 回复反馈 |
 | `user:feedback:close` | 关闭反馈 |
 
-按钮级操作全部使用 `v-permission`，后端 `AdminGlobalFilter` 同步校验 `admin_apis:{userId}`。
+按钮级操作全部使用 `v-permission`，后端 `AdminGlobalFilter` 同步校验 `admin:apis:{userId}`。
 
 ---
 
@@ -653,7 +653,7 @@ Admin 开发出现口径冲突时，按以下顺序处理：
 | 范围 | 本次结果 | 仍需复验 |
 |---|---|---|
 | 菜单 seed 兼容 | D13 admin 菜单 SQL 已兼容当前 Release 基线 `/user` 父菜单与 `Release Super Admin` 角色；本地库 D13 菜单 29 项、核心运营权限均有角色绑定 | 非 Release 目标库执行前需核对父菜单路径与角色名 |
-| Admin token 与 RBAC | 通过真实验证码接口、Redis 验证码值、RSA 公钥加密密码登录 `13800138000 / XiaoE@2026`，刷新 `admin_apis:1` 后，T-ADM-01/02/03/05 列表类 Gate 均返回 HTTP 200 + `code=200` | T-ADM-04 上课记录详情需真实 `ScheduleId`；审核通过、课时包新建、排课调整、反馈回复等写路径需浏览器 L6 逐项执行 |
+| Admin token 与 RBAC | 通过真实验证码接口、Redis 验证码值、RSA 公钥加密密码登录基线管理员账号 `13800138000`（本地验收账号，密码不写入文档），刷新 `admin:apis:1` 后，T-ADM-01/02/03/05 列表类 Gate 均返回 HTTP 200 + `code=200` | T-ADM-04 上课记录详情需真实 `ScheduleId`；审核通过、课时包新建、排课调整、反馈回复等写路径需浏览器 L6 逐项执行 |
 | Gate 脚本 | `verify-d13-w6-gate.ps1` 已收紧为业务 `code=200` 才通过，避免 `MENU_NO(306)` 被误判为 OK | 浏览器页面状态、按钮禁用态、异常提示仍需 Admin dev server 联调 |
 
 ---
@@ -665,3 +665,12 @@ Admin 开发出现口径冲突时，按以下顺序处理：
 3. 约课订单、排课、上课记录随后与后端状态机联调。
 4. FAQ、反馈、消息、工作台在主交易链可用后补齐。
 5. 每个 admin 操作都要拿 Android 对应屏复验，不把后台页面孤立算完成。
+
+
+## T-20261018 家教 Web / Admin 批量验收补记（2026-10-18）
+
+本轮实际正常验证码登录账号 13200000000，沿用图片验证码/RSA/token/RBAC。修正课程错误统计列与链接、订单金额/时间/空关联、列表请求并发覆盖、配置提前加载、账号重复公钥请求、教学记录筛选和评分/评语文案，恢复现有业务菜单和细粒度按钮键。29 个可见菜单页加载通过，FAQ 编辑写入/恢复及课后记录详情另有浏览器证据；不是全部运营写按钮通过。
+
+L2 两站构建及四服务 package 退出 0；L3 既有治理 19 项，失败/错误/跳过均 0；L4 四服务 UP、Nacos local 各 healthy=1；L5 批量 840/840；L6 Web 23/23、Admin 29 页加载通过，另 4 项保存/详情检查通过。L7 第三方无测试配置，资金/生产发布门禁未闭环。并行验收时曾出现 15 秒超时，失败和恢复证据保留，不宣称并发容量通过。
+
+完整文件、命令、SQL 数据范围、哈希、截图、未验项和回滚见 [本轮报告](../xiaoe-education-master/docs/deploy/20261018-tutoring-web-admin-report.md)。

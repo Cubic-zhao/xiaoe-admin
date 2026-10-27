@@ -19,16 +19,18 @@
 
 <script setup>
   import { systemApi } from '@/api/system'
-  import { onMounted, reactive, ref } from 'vue'
+  import { reactive, ref } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { loginApi } from '@/api/login.js'
   import { encrypt } from '@/utils/base.js'
 
   // 校验规则
   const formRef = ref()
   const rules = {
     mobilePwd: [{ required: true, message: '不能为空', trigger: 'blur' }],
-    confirmPassword: [{ required: true, message: '不能为空', trigger: 'blur' }]
+    confirmPassword: [
+      { required: true, message: '不能为空', trigger: 'blur' },
+      { validator: (_rule, value, callback) => callback(value === formModel.mobilePwd ? undefined : new Error('两次输入的密码不一致')), trigger: 'blur' }
+    ]
   }
 
   // 表单
@@ -40,14 +42,6 @@
     confirmPassword: undefined
   }
   const formModel = reactive({ ...formDefault })
-
-  // 站点信息
-  const service = ref({})
-  onMounted(() => {
-    loginApi.getWebsite().then((res) => {
-      service.value = res
-    })
-  })
 
   const onSubmit = async () => {
     // 校验
@@ -62,7 +56,7 @@
     try {
       if (formModel.userId) {
         // 密码加密
-        formModel.mobilePwdEncrypt = encrypt(formModel.mobilePwd, service.value.rsaLoginPublicKey)
+        formModel.mobilePwdEncrypt = encrypt(formModel.mobilePwd)
         delete formModel.mobilePwd
         delete formModel.confirmPassword
         const res = await systemApi.sysUserPassword(formModel)

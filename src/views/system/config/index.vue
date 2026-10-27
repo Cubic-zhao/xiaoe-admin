@@ -1,17 +1,15 @@
 <template>
   <div class="app-container">
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane v-for="item in tabPanes" :key="item.configType" :label="item.label" :name="item.configType">
-        <list :list="page.list" :config-type="item.configType" @refresh="handlePage"></list>
+      <el-tab-pane v-for="item in tabPanes" :key="item.configType" :label="item.label" :name="item.configType" lazy>
+        <list v-if="activeName === item.configType" :list="page.list" :config-type="item.configType" @refresh="handlePage"></list>
       </el-tab-pane>
     </el-tabs>
-    <release-gate-panel />
   </div>
 </template>
 <script setup>
   import { ref } from 'vue'
   import List from './List.vue'
-  import ReleaseGatePanel from './ReleaseGatePanel.vue'
   import { systemApi } from '@/api/system'
   import useTable from '@/utils/table'
 
@@ -38,10 +36,6 @@
     {
       label: '登录设置',
       configType: '2'
-    },
-    {
-      label: '视频设置',
-      configType: '3'
     },
     {
       label: '存储设置',

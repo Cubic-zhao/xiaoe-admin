@@ -60,7 +60,7 @@
       <el-table-column label="授课科目" min-width="180" show-overflow-tooltip>
         <template #default="scope">{{ scope.row.subjects || '-' }}</template>
       </el-table-column>
-      <el-table-column label="课时价" min-width="100">
+      <el-table-column label="课程参考价" min-width="100">
         <template #default="scope">{{ money(scope.row.minHourPrice) }}</template>
       </el-table-column>
       <el-table-column label="教龄" min-width="90">
@@ -182,14 +182,17 @@
 
   const saveConfig = async () => {
     dialog.saving = true
-    await usersApi.tutorOperationConfig({
-      ...dialog.form,
-      displayStatus: dialog.visibleSwitch ? 'visible' : 'hidden'
-    })
-    dialog.saving = false
-    dialog.visible = false
-    ElMessage.success('操作成功')
-    handlePage()
+    try {
+      await usersApi.tutorOperationConfig({
+        ...dialog.form,
+        displayStatus: dialog.visibleSwitch ? 'visible' : 'hidden'
+      })
+      dialog.visible = false
+      ElMessage.success('操作成功')
+      await handlePage()
+    } finally {
+      dialog.saving = false
+    }
   }
 
   const toggleDisplay = async (row) => {
@@ -216,7 +219,7 @@
   const displayType = (value) => ({ visible: 'success', hidden: 'info' })[value] || 'info'
   const deliveryLabel = (value) => ({ online: '线上', offline: '线下', both: '均可' })[value] || value || '-'
   const score = (value) => (value ? Number(value).toFixed(1) : '-')
-  const money = (value) => (value ? `¥${Number(value).toFixed(2)}` : '-')
+  const money = (value) => (value == null ? '-' : `¥${Number(value).toFixed(2)}`)
 </script>
 
 <style scoped>

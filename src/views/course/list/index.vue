@@ -19,9 +19,9 @@
     <el-table v-loading="page.loading" :data="page.list" row-key="id" class="drag-table">
       <el-table-column :min-width="180" label="课程信息">
         <template #default="scope">
-          <img :alt="scope.row.courseName" :src="scope.row.courseLogo" style="float: left; height: 50px; width: 90px; vertical-align: middle; border-radius: 5px" />
+          <el-image v-if="scope.row.courseLogo" :alt="scope.row.courseName" :src="scope.row.courseLogo" class="course-cover"><template #error><span>封面未提供</span></template></el-image>
           <div style="float: left; margin-left: 10px; max-width: 70%">
-            <el-link :href="'/course/detail?id=' + scope.row.id" target="_blank">{{ scope.row.courseName }}</el-link>
+            <el-link v-permission="'course:edit'" @click="toCourseUpdate(scope.row)">{{ scope.row.courseName }}</el-link>
             <br />
             <span v-if="scope.row.isFree === 1">免费</span>
             <span v-if="scope.row.isFree === 0">
@@ -42,12 +42,6 @@
       <el-table-column :min-width="50" label="销售量/学习人数" prop="countBuy">
         <template #default="scope">
           <span>{{ scope.row.countBuy }} / {{ scope.row.countStudy }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :min-width="40" label="移动端消费字段">
-        <template #default="scope">
-          <div>章节: {{ scope.row.periodCount ?? 0 }}</div>
-          <div class="table-secondary">评论: {{ scope.row.commentCount ?? 0 }} | 评分: {{ scope.row.rating ?? 0 }}</div>
         </template>
       </el-table-column>
       <el-table-column :min-width="30" label="售卖">
@@ -133,6 +127,7 @@
 </script>
 
 <style scoped>
+  .course-cover { float: left; height: 50px; width: 90px; border-radius: 5px; }
   .table-secondary {
     color: #909399;
     font-size: 12px;

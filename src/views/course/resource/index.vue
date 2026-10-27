@@ -33,11 +33,6 @@
               <span>{{ scope.row.resourceName }}</span>
               <span v-if="scope.row.resourceType === 4"><br /></span>
               <el-image v-if="scope.row.resourceType === 4" :src="scope.row.resourceUrl" :preview-src-list="[scope.row.resourceUrl]" preview-teleported style="height: 50px; width: auto" />
-              <el-button v-if="scope.row.videoStatus === 2" link @click="onPreview(scope.row)">
-                <el-icon size="20">
-                  <VideoPlay />
-                </el-icon>
-              </el-button>
             </template>
           </el-table-column>
           <el-table-column :min-width="60" label="资源大小" prop="resourceSize">
@@ -97,16 +92,14 @@
     </div>
     <resource-form ref="formRef" @refresh="handlePage" />
     <move-model v-if="ids.length > 0" ref="moveRef" @refresh="handlePage" />
-    <preview v-if="resource.visible" :visible="resource.visible" :resource-id="resource.resourceId" :resource-name="resource.resourceName" @close="closePreview" />
   </div>
 </template>
 
 <script setup>
   import useTable from '@/utils/table'
-  import { onMounted, onUnmounted, reactive, ref } from 'vue'
+  import { onMounted, onUnmounted, ref } from 'vue'
   import ResourceForm from './ResourceForm.vue'
   import MoveModel from './MoveModel.vue'
-  import Preview from '@/components/Preview/index.vue'
   import Pagination from '@/components/Pagination/index.vue'
   import { courseApi } from '@/api/course'
   import { formatTime, getEnumList, transformSize } from '@/utils/base'
@@ -132,21 +125,6 @@
     activeName.value = tab.props.name
     query.resourceType = tab.props.name
     handleQuery()
-  }
-
-  // 预览
-  const resource = reactive({
-    visible: false,
-    resourceId: '',
-    resourceName: ''
-  })
-  const onPreview = (item) => {
-    resource.visible = true
-    resource.resourceId = item.id
-    resource.resourceName = item.resourceName
-  }
-  const closePreview = () => {
-    resource.visible = false
   }
 
   // 添加/修改

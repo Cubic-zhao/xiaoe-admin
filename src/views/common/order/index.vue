@@ -10,7 +10,7 @@
             <el-input v-model="query.mobile" placeholder="根据手机号码搜索" prefix-icon="Search" />
           </el-form-item>
           <el-form-item>
-            <enum-select v-model="query.orderStatus" :enum-name="'OrderStatusEnum'" :title="'请选择支付方式'" />
+            <enum-select v-model="query.orderStatus" :enum-name="'OrderStatusEnum'" :title="'请选择订单状态'" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleQuery()">查询</el-button>
@@ -22,12 +22,12 @@
     <el-table v-loading="page.loading" :data="page.list">
       <el-table-column :min-width="180" label="商品信息">
         <template #default="scope">
-          <img :alt="scope.row.courseViewVO.courseName" :src="scope.row.courseViewVO.courseLogo" style="float: left; height: 50px; width: 90px; vertical-align: middle; border-radius: 5px" />
+          <el-image v-if="scope.row.courseViewVO?.courseLogo" :alt="scope.row.courseViewVO?.courseName" :src="scope.row.courseViewVO.courseLogo" class="order-cover"><template #error><span>封面未提供</span></template></el-image>
           <div style="float: left; margin-left: 10px">
-            {{ scope.row.courseViewVO.courseName }}
+            {{ scope.row.courseViewVO?.courseName || '课程信息缺失' }}
             <br />
-            <span v-if="scope.row.courseViewVO.isFree == 1">免费</span>
-            <span v-if="scope.row.courseViewVO.isFree == 0">
+            <span v-if="scope.row.courseViewVO?.isFree == 1">免费</span>
+            <span v-if="scope.row.courseViewVO?.isFree == 0">
               ￥{{ scope.row.courseViewVO.coursePrice }}<span style="text-decoration: line-through; margin-left: 10px">￥{{ scope.row.courseViewVO.rulingPrice }}</span>
             </span>
           </div>
@@ -39,7 +39,7 @@
         </template>
       </el-table-column>
       <el-table-column :min-width="50" label="用户手机" prop="mobile" />
-      <el-table-column :min-width="50" label="实付金额">
+      <el-table-column :min-width="50" label="订单金额">
         <template #default="scope">
           <span> ￥{{ scope.row.coursePrice }} </span>
         </template>
@@ -48,8 +48,7 @@
         <template #default="scope">
           <enum-view :enum-name="'PayTypeEnum'" :enum-value="scope.row.payType" />
           <br />
-          <span v-if="scope.row.orderStatus === 2">{{ scope.row.payTime }}</span>
-          <span v-else>{{ scope.row.gmtCreate }}</span>
+          <span>{{ scope.row.payTime || '无支付时间' }}</span>
         </template>
       </el-table-column>
       <el-table-column :min-width="50" label="订单状态">
@@ -93,3 +92,6 @@
     page: usersApi.orderInfoPage
   })
 </script>
+<style scoped>
+  .order-cover { float: left; height: 50px; width: 90px; border-radius: 5px; }
+</style>
