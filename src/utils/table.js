@@ -88,16 +88,26 @@ export default function useTable(apis, paras = {}) {
     }
   }
 
-  // 状态修改
-  const handleStatus = async (row) => {
+  // 状态修改：先二次确认，写明操作对象与后果；label 为可选的对象名称
+  const handleStatus = async (row, label = '') => {
+    if (!apis.status) return
+    const statusId = row.statusId ? 0 : 1
+    const action = statusId ? '启用' : '禁用'
+    const consequence = statusId ? '启用后立即生效。' : '禁用后立即停止生效，可随时重新启用。'
+    try {
+      await ElMessageBox.confirm(`确认${action}${label || '该条记录'}？${consequence}`, `${action}确认`, {
+        type: 'warning',
+        cancelButtonText: '取消',
+        confirmButtonText: `确认${action}`
+      })
+    } catch {
+      return
+    }
     page.loading = true
     try {
-      if (apis.status) {
-        const statusId = row.statusId ? 0 : 1
-        const res = await apis.status({ id: row.id, statusId })
-        row.statusId = statusId
-        ElMessage.success({ message: res?.msg || '操作成功' })
-      }
+      const res = await apis.status({ id: row.id, statusId })
+      row.statusId = statusId
+      ElMessage.success({ message: res?.msg || '操作成功' })
     } finally {
       page.loading = false
     }

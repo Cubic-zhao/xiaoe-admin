@@ -7,18 +7,19 @@
             <router-link :to="resolveMenuPath(item)" @click="handleMenu(item)">
               <el-menu-item :key="item.id" :class="[item.id === showMenuId ? 'is-active' : '']" :index="resolveMenuPath(item)">
                 <icon :name="item.menuIcon" class="menu-icon" />
-                {{ item.menuName }}
+                <span class="menu-label">{{ item.menuName }}</span>
               </el-menu-item>
             </router-link>
           </div>
         </el-menu>
       </div>
       <div v-if="hasSubMenu" class="menu-sub">
+        <p v-if="subMenuTitle" class="menu-sub-title">{{ subMenuTitle }}</p>
         <el-menu v-for="sub in subMenuList" :key="sub.id" :default-active="showSubMenuId" mode="vertical">
           <div class="menu-sub-item">
             <router-link :to="resolveMenuPath(sub)" @click="showChildrenMenu(subMenuList)">
               <el-menu-item :key="sub.id" :class="[sub.id === showSubMenuId ? 'is-active' : '']" :index="resolveMenuPath(sub)">
-                {{ sub.menuName }}
+                <span class="menu-sub-label">{{ sub.menuName }}</span>
               </el-menu-item>
             </router-link>
           </div>
@@ -58,6 +59,16 @@
 
   const menuList = computed(() => filterVisibleMenus(rawMenuList.value))
   const hasSubMenu = computed(() => subMenuList.value.length > 0)
+
+  // 子菜单列的分组标题：取当前子菜单所属一级菜单的名称，只用于展示
+  const subMenuTitle = computed(() => {
+    const firstId = subMenuList.value[0]?.id
+    if (firstId === undefined) {
+      return ''
+    }
+    const owner = menuList.value.find((menu) => filterVisibleMenus(menu.children).some((child) => child.id === firstId))
+    return owner?.menuName || ''
+  })
 
   const resolveMenuPath = (menu) => {
     const visibleChildren = filterVisibleMenus(menu?.children)
@@ -111,116 +122,164 @@
 </script>
 
 <style lang="scss" scoped>
+  // 两列结构与悬停展开逻辑不变；宽度、配色按 60 号方案 §4.2
   .el-aside {
     overflow: hidden;
-    width: 100px;
+    width: var(--xe-menu-main-width);
+    transition: all 0.5s;
 
     &.show-sub {
-      width: 200px;
+      width: calc(var(--xe-menu-main-width) + var(--xe-menu-sub-width));
     }
-
-    transition: all 0.5s;
   }
 
   .menu-side {
     position: fixed;
-    top: 60px;
+    top: var(--xe-header-height);
+    display: flex;
   }
 
   .menu-main {
-    .menu-icon {
-      margin-right: 6px;
-      width: 20px;
-      height: 20px;
-    }
+    box-sizing: border-box;
+    width: var(--xe-menu-main-width);
+    height: calc(100vh - var(--xe-header-height));
+    padding-top: 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--xe-ink-900);
+
     .el-menu {
-      background-color: #15213e;
+      background-color: transparent;
       border: 0;
     }
 
-    width: 90px;
-    float: left;
-    height: calc(100vh - 50px);
-    background-color: #15213e;
-    padding-left: 10px;
+    a {
+      display: block;
+
+      // 深色底上用实色内描边，保证焦点可见
+      &:focus-visible {
+        border-radius: 0;
+        box-shadow: inset 0 0 0 2px var(--xe-brand-500);
+      }
+    }
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .menu-label {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .menu-main-item {
       .el-menu-item {
-        width: 90px;
-        height: 50px;
-        margin: 10px 0;
-        color: white;
-        border-radius: 10px 0 0 10px;
+        position: relative;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        width: var(--xe-menu-main-width);
+        height: 72px;
+        padding: 0 6px;
+        color: var(--xe-ink-400);
+        font-size: 12px;
+        line-height: 1.4;
 
         &:hover {
-          background-color: #3b455d;
+          background-color: var(--xe-ink-800);
           color: #fff;
         }
 
         &.is-active {
-          background-color: #fff;
-          color: black;
+          background-color: var(--xe-ink-800);
+          color: #fff;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            bottom: 14px;
+            left: 0;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--xe-brand-500);
+          }
         }
       }
 
-      .is-active {
-        background-color: #fff;
-        color: black;
+      &.hover .el-menu-item {
+        background-color: var(--xe-ink-800);
+        color: #fff;
       }
-    }
-
-    .hover {
-      background-color: #3b455d;
-      color: #fff;
-      border-radius: 10px 0 0 10px;
     }
   }
 
   .menu-sub {
+    box-sizing: border-box;
     width: 0;
+    height: calc(100vh - var(--xe-header-height));
+    padding: 20px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
     opacity: 0;
-    float: left;
-    padding-top: 10px;
     background-color: #fff;
-    height: calc(100vh - 50px);
+    border-right: 1px solid var(--xe-ink-200);
     transition: all 0.5s;
 
     .el-menu {
+      background-color: transparent;
       border: none;
+    }
+
+    .menu-sub-title {
+      margin: 0 0 4px;
+      padding: 0 8px;
+      color: var(--xe-ink-500);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    a {
+      display: block;
+      margin-top: 4px;
+    }
+
+    .menu-sub-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .menu-sub-item {
       .el-menu-item {
         height: 40px;
-        box-sizing: border-box;
-        margin: 5px auto;
-        justify-content: center;
-        width: 80px;
+        padding: 0 12px;
+        border-radius: 8px;
+        color: var(--xe-ink-700);
+        font-size: 14px;
+        line-height: 40px;
 
         &:hover {
-          background-color: #f0f1ff;
-          border-radius: 5px;
-          width: 80px;
+          background-color: var(--xe-ink-100);
         }
-      }
 
-      .is-active {
-        background-color: #f0f1ff;
-        border-radius: 5px;
-        width: 80px;
+        &.is-active {
+          background-color: var(--xe-brand-50);
+          color: var(--xe-brand-700);
+          font-weight: 700;
+        }
       }
     }
   }
 
   .show-sub {
     .menu-sub {
-      transition: all 0.5s;
-      width: 100px;
+      width: var(--xe-menu-sub-width);
       opacity: 1;
     }
-  }
-
-  .is-active {
-    color: black;
   }
 </style>

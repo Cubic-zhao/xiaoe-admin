@@ -72,6 +72,23 @@ export const usersApi = {
     return getRequest('/user/admin/order/info/stat?userId=' + data.userId)
   },
 
+  // order refund audit page
+  refundPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/order/refund/page', { pageCurrent, pageSize, ...params })
+  },
+  refundView: (data) => {
+    return getRequest('/user/admin/order/refund/view?id=' + data.id)
+  },
+  refundApprove: (data) => {
+    return putRequest('/user/admin/order/refund/approve', data)
+  },
+  refundReject: (data) => {
+    return putRequest('/user/admin/order/refund/reject', data)
+  },
+  refundSync: (data) => {
+    return putRequest('/user/admin/order/refund/sync?id=' + data.id, {})
+  },
+
   // wallet withdraw audit page
   withdrawPage: (params, pageCurrent = 1, pageSize = 20) => {
     return postRequest('/user/admin/wallet/withdraw/page', { pageCurrent, pageSize, ...params })

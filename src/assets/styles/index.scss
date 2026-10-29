@@ -1,6 +1,12 @@
+// 主题变量（60 号方案 §4.1）；删除本行即恢复 Element Plus 默认配色
+@use './theme';
+
 body {
   margin: 0;
   word-break: break-all;
+  font-family: var(--el-font-family);
+  font-size: 14px;
+  color: var(--el-text-color-regular);
 }
 
 a {
@@ -8,12 +14,15 @@ a {
   color: inherit;
 }
 
-.c-danger {
-  color: gray;
+// 焦点可见（60 号方案 §2.3）
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--xe-focus-ring);
+  border-radius: 8px;
 }
 
 .c-special {
-  color: red;
+  color: var(--xe-danger-700);
   font-weight: bold;
 }
 
@@ -44,6 +53,16 @@ a {
   padding: 0 20px;
 }
 
+// 卡片：12 圆角、1px 描边、轻阴影（60 号方案 §4.2）
+.el-card {
+  --el-card-border-radius: var(--xe-radius-md);
+  --el-card-border-color: var(--el-border-color);
+}
+
+.el-card.is-always-shadow {
+  box-shadow: var(--xe-shadow-sm);
+}
+
 // 分页组件
 .el-pagination {
   margin-top: 20px;
@@ -52,7 +71,7 @@ a {
 
 // 表头样式
 .el-table .el-table__header th.is-leaf {
-  background-color: #f9f9f9;
+  background-color: var(--xe-ink-50);
   height: 50px;
 }
 

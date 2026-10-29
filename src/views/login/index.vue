@@ -9,29 +9,32 @@
         <p class="info">请使用平台分配的管理账号登录。可访问的菜单与操作由账号角色决定。</p>
       </div>
       <div class="login-panel">
-        <el-form v-loading="loading" :model="loginForm" label-position="left" @keyup.enter="handleLogin()">
+        <el-form ref="formRef" v-loading="loading" :model="loginForm" :rules="rules" label-position="left" @keyup.enter="handleLogin()">
           <h3 class="login-head">管理员登录</h3>
           <el-form-item class="form-group" prop="mobile">
-            <el-input v-model="loginForm.mobile" placeholder="用户名" />
+            <el-input v-model="loginForm.mobile" placeholder="用户名" aria-label="用户名" autocomplete="username" />
           </el-form-item>
           <el-form-item class="form-group" prop="mobilePwd">
-            <el-input v-model="loginForm.mobilePwd" placeholder="密码" type="password" show-password />
+            <el-input v-model="loginForm.mobilePwd" placeholder="密码" aria-label="密码" type="password" autocomplete="current-password" show-password />
           </el-form-item>
           <el-form-item class="form-group" prop="verCode">
-            <el-input v-model="loginForm.verCode" class="var-input" placeholder="验证码" />
-            <img class="var-img" :src="verImg" alt="" @click="getCaptcha" />
+            <div class="ver-row">
+              <el-input v-model="loginForm.verCode" class="var-input" placeholder="验证码" aria-label="验证码" autocomplete="off" />
+              <button class="var-button" type="button" aria-label="看不清，换一张" @click="getCaptcha">
+                <img v-if="verImg" class="var-img" :src="verImg" alt="图形验证码" />
+                <span v-else class="var-placeholder">获取验证码</span>
+              </button>
+            </div>
           </el-form-item>
           <el-button class="login-button" type="primary" @click="handleLogin">登 录</el-button>
         </el-form>
       </div>
     </div>
     <div class="footer">
-      <div v-if="service.websiteCopyright" class="copyright">
-        <span v-html="service.websiteCopyright" />
-      </div>
+      <div v-if="service.websiteCopyright" class="copyright">{{ service.websiteCopyright }}</div>
       <div>
         <a v-if="service.websiteIcp" href="http://beian.miit.gov.cn/" target="_blank">{{ service.websiteIcp }}</a>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-if="service.websiteIcp && service.websitePrn" class="footer-sep" aria-hidden="true">|</span>
         <img v-if="service.websitePrn" class="website-prn" :alt="service.websitePrn" src="../../assets/images/common/beian.png" />
         <a v-if="service.websitePrn" :href="'http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=' + service.websitePrnNo" target="_blank">&nbsp;{{ service.websitePrn }} </a>
       </div>
@@ -47,12 +50,12 @@
   import { useUserStore } from '@/store/modules/user'
   import { createNewRouter } from '@/router'
   import { PATH } from '@/utils/constants/system'
-  import { ElMessage } from 'element-plus'
   import { encrypt } from '@/utils/base.js'
 
   const router = useRouter()
   const loading = ref(false)
   const verImg = ref()
+  const formRef = ref()
 
   // 站点信息
   const service = ref({})
@@ -72,6 +75,13 @@
     verToken: ''
   })
 
+  // 必填校验，错误提示显示在字段下方
+  const rules = {
+    mobile: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+    mobilePwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    verCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+  }
+
   // 获取验证码
   async function getCaptcha() {
     try {
@@ -86,14 +96,8 @@
 
   async function handleLogin() {
     if (loading.value) return
-    if (!loginForm.mobile || !loginForm.mobilePwd) {
-      ElMessage.error('请输入用户名和密码')
-      return
-    }
-    if (!loginForm.verCode) {
-      ElMessage.error('请输入验证码')
-      return
-    }
+    const valid = await formRef.value?.validate().catch(() => false)
+    if (!valid) return
 
     loading.value = true
     try {
@@ -122,8 +126,10 @@
 
 <style lang="scss" scoped>
   .login-container {
-    height: 100vh;
-    background: #2873f0;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 100vh;
+    background: var(--xe-ink-100);
   }
 
   .login-content {
@@ -131,57 +137,60 @@
     top: calc((100vh - 520px) / 2);
     left: 0;
     right: 0;
+    display: flex;
     width: 800px;
     margin: 0 auto;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.14);
 
     .login-info {
-      float: left;
-      width: 350px;
-      padding: 25px;
-      height: 450px;
+      box-sizing: border-box;
+      width: 400px;
+      min-height: 480px;
+      padding: 40px 36px;
       color: #fff;
-      background: #033c94;
-      border-radius: 12px 0 0 12px;
+      background: linear-gradient(135deg, var(--xe-brand-700), var(--xe-brand-800));
 
       .title {
-        font-size: 20px;
+        margin: 0;
+        font-size: 22px;
         font-weight: 700;
       }
 
       .info {
+        margin: 16px 0 0;
+        color: var(--xe-brand-100);
         font-size: 15px;
-        font-weight: 300;
-        line-height: 25px;
+        line-height: 1.75;
       }
     }
 
     .login-panel {
-      float: right;
+      box-sizing: border-box;
+      width: 400px;
+      padding: 40px 36px;
       background: #fff;
-      height: 450px;
-      width: 350px;
-      padding: 25px;
-      border-radius: 0 12px 12px 0;
 
       .login-head {
-        text-align: center;
-        font-size: 28px;
+        margin: 0 0 28px;
+        color: var(--xe-ink-900);
+        font-size: 24px;
         font-weight: 700;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 22px;
       }
 
       .login-button {
-        width: 350px;
-        height: 45px;
-        background: #2873f0;
-        border-radius: 4px;
+        width: 100%;
+        height: 44px;
+        margin-top: 8px;
         font-size: 16px;
         font-weight: 700;
-        text-align: center;
-        color: #fff;
-        line-height: 50px;
-        cursor: pointer;
       }
-
     }
   }
 
@@ -190,29 +199,77 @@
     bottom: 0;
     left: 0;
     right: 0;
-    color: #fff;
-    text-align: center;
     padding-bottom: 20px;
+    color: var(--xe-ink-600);
     font-size: 13px;
     line-height: 25px;
+    text-align: center;
 
     a {
+      color: var(--xe-ink-600);
       text-decoration: none;
-      color: #fff;
+
+      &:hover {
+        color: var(--xe-brand-700);
+        text-decoration: underline;
+      }
     }
+
+    .footer-sep {
+      margin: 0 12px;
+    }
+
     .website-prn {
       width: auto;
+      vertical-align: middle;
     }
+  }
+
+  .ver-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
   }
 
   .var-input {
-    width: 200px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .var-button {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 104px;
+    height: 40px;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--el-border-color);
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--xe-brand-600);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--xe-focus-ring);
+    }
   }
 
   .var-img {
-    margin-left: 20px;
-    width: 80px;
-    height: auto;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .var-placeholder {
+    color: var(--xe-brand-700);
+    font-size: 13px;
   }
 
   .el-input {
@@ -221,10 +278,7 @@
 
   @media (max-width: 840px), (max-height: 680px) {
     .login-container {
-      min-height: 100vh;
-      height: auto;
       padding: 24px 16px;
-      box-sizing: border-box;
     }
 
     .login-content {
@@ -232,21 +286,20 @@
       width: 100%;
       max-width: 400px;
 
-      .login-info { display: none; }
+      .login-info {
+        display: none;
+      }
 
       .login-panel {
-        float: none;
         width: 100%;
-        height: auto;
         min-height: 400px;
-        box-sizing: border-box;
-        border-radius: 8px;
-
-        .login-button { width: 100%; }
       }
     }
 
-    .var-input { width: calc(100% - 100px); }
-    .footer { position: static; margin-top: 24px; overflow-wrap: anywhere; }
+    .footer {
+      position: static;
+      margin-top: 24px;
+      overflow-wrap: anywhere;
+    }
   }
 </style>

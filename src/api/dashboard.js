@@ -9,6 +9,10 @@ export const statApi = {
   login: () => {
     return getRequest('/user/admin/stat/login?dates=-14')
   },
+  // 家教工作台今日待办
+  o2o: () => {
+    return getRequest('/user/admin/stat/o2o')
+  },
   // 点播用量统计
   vod: () => {
     return getRequest('/system/admin/stat/vod')

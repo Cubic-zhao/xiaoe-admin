@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>设计示意 · 小鹅家教运营管理平台 · 家教工作台 v1</title>
+<!--
+  设计示意稿（2026-10-27），配套：xiaoe-education-admin/60_Web与Admin美化设计方案.md
+  - 自包含：不引用外部资源；实现时用 Element Plus 组件 + CSS 变量覆盖，不新增 npm 依赖。
+  - 所有数字均为示例数据，不是真实数据。
+  - 带 ◆ 的“今日待办”指标在现有接口中不存在，需先新增 GET /user/admin/stat/o2o（方案 §5.3），未接通前不得用假数字上线。
+-->
+<style>
+  :root {
+    --brand-50: #EFF6FF;
+    --brand-100: #DBEAFE;
+    --brand-500: #3B82F6;
+    --brand-600: #2563EB;
+    --brand-700: #1D4ED8;
+    --ink-900: #0F172A;
+    --ink-800: #1E293B;
+    --ink-700: #334155;
+    --ink-600: #475569;
+    --ink-500: #64748B;
+    --ink-400: #94A3B8;
+    --ink-300: #CBD5E1;
+    --ink-200: #E2E8F0;
+    --ink-100: #F1F5F9;
+    --success-700: #047857;
+    --success-50: #ECFDF5;
+    --warning-700: #B45309;
+    --warning-50: #FFFBEB;
+    --danger-700: #B91C1C;
+    --danger-50: #FEF2F2;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+    --focus-ring: 0 0 0 3px rgba(37, 99, 235, .35);
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-width: 1280px; font-family: var(--font-sans); font-size: 14px; line-height: 1.6; color: var(--ink-700); background: var(--ink-100); }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+  :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+  .preview-note { height: 32px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; background: var(--ink-900); color: var(--ink-300); font-size: 12px; }
+  .preview-note span:last-child { color: var(--ink-400); }
+
+  /* 顶栏（对应 layout/components/Navbar） */
+  .navbar { height: 56px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid var(--ink-200); }
+  .logo { width: 88px; height: 56px; display: grid; place-items: center; background: var(--ink-900); }
+  .logo span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; background: var(--brand-600); color: #fff; font-size: 18px; font-weight: 700; }
+  .product { margin-left: 16px; color: var(--ink-900); font-size: 16px; font-weight: 700; }
+  .breadcrumb { margin-left: 32px; color: var(--ink-500); }
+  .breadcrumb b { color: var(--ink-900); font-weight: 600; }
+  .user { margin-left: auto; margin-right: 24px; display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--radius-sm); }
+  .user:hover { background: var(--ink-100); }
+  .user-avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--brand-100); color: var(--brand-700); font-weight: 700; }
+
+  .shell { display: flex; min-height: calc(100vh - 88px); }
+  /* 侧栏：保留现有“主菜单 + 子菜单”两列结构，只换样式与宽度 */
+  .menu-main { width: 88px; flex: none; padding-top: 16px; background: var(--ink-900); }
+  .menu-main a { position: relative; height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--ink-400); font-size: 12px; }
+  .menu-main a:hover { color: #fff; background: var(--ink-800); }
+  .menu-main a[aria-current="page"] { color: #fff; background: var(--ink-800); }
+  .menu-main a[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--brand-500); }
+  .menu-sub { width: 168px; flex: none; padding: 20px 12px; background: #fff; border-right: 1px solid var(--ink-200); }
+  .menu-sub h2 { padding: 0 8px; color: var(--ink-500); font-size: 12px; font-weight: 600; }
+  .menu-sub a { display: block; margin-top: 8px; padding: 9px 12px; border-radius: var(--radius-sm); color: var(--ink-700); }
+  .menu-sub a:hover { background: var(--ink-100); }
+  .menu-sub a[aria-current="page"] { background: var(--brand-50); color: var(--brand-700); font-weight: 700; }
+
+  .content { flex: 1; min-width: 0; padding: 24px; }
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; }
+  .page-head h1 { color: var(--ink-900); font-size: 22px; line-height: 1.4; }
+  .page-head p { color: var(--ink-600); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: var(--radius-sm); font-weight: 600; }
+  .btn-secondary { border: 1px solid var(--ink-300); background: #fff; color: var(--ink-700); }
+  .btn-secondary:hover { border-color: var(--brand-600); color: var(--brand-700); }
+
+  .block-title { display: flex; align-items: center; gap: 12px; margin: 24px 0 12px; }
+  .block-title h2 { color: var(--ink-900); font-size: 15px; }
+  .note { color: var(--ink-600); font-size: 12px; }
+  .note-warn { padding: 1px 10px; border-radius: 999px; background: var(--warning-50); color: var(--warning-700); font-weight: 600; }
+
+  .todo-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; list-style: none; }
+  .todo { display: flex; flex-direction: column; min-height: 120px; padding: 16px 18px; border: 1px solid var(--ink-200); border-radius: var(--radius-md); background: #fff; }
+  .todo-label { display: flex; align-items: center; justify-content: space-between; color: var(--ink-600); }
+  .todo-label i { color: var(--warning-700); font-style: normal; font-size: 12px; }
+  .todo strong { margin-top: 6px; color: var(--ink-900); font-size: 30px; line-height: 1.2; font-weight: 800; }
+  .todo.is-danger strong { color: var(--danger-700); }
+  .todo a { margin-top: auto; color: var(--brand-600); font-size: 13px; font-weight: 600; }
+  .todo a:hover { color: var(--brand-700); text-decoration: underline; }
+
+  .stat-panel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--ink-200); border-radius: var(--radius-md); background: #fff; }
+  .stat { padding: 18px 24px; border-right: 1px solid var(--ink-100); border-bottom: 1px solid var(--ink-100); }
+  .stat:nth-child(4n) { border-right: 0; }
+  .stat:nth-child(n+5) { border-bottom: 0; }
+  .stat span { color: var(--ink-500); font-size: 13px; }
+  .stat strong { display: block; margin-top: 4px; color: var(--ink-900); font-size: 24px; font-weight: 800; }
+
+  .bottom-row { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; margin-top: 24px; }
+  .panel { padding: 20px 24px; border: 1px solid var(--ink-200); border-radius: var(--radius-md); background: #fff; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; }
+  .panel-head h2 { color: var(--ink-900); font-size: 15px; }
+  .legend { display: flex; gap: 16px; color: var(--ink-600); font-size: 13px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: currentColor; vertical-align: -1px; }
+  .legend .login { color: var(--brand-600); }
+  .legend .register { color: #F59E0B; }
+  .legend b { color: var(--ink-600); font-weight: 400; }
+  .chart { margin-top: 12px; width: 100%; height: auto; }
+
+  .quick { list-style: none; margin-top: 8px; }
+  .quick a { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: var(--radius-sm); }
+  .quick a:hover { background: var(--ink-100); }
+  .quick-icon { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: var(--radius-sm); background: var(--brand-50); color: var(--brand-600); font-weight: 800; }
+  .quick strong { display: block; color: var(--ink-900); font-size: 14px; }
+  .quick small { color: var(--ink-500); font-size: 12px; }
+  .quick .chev { margin-left: auto; color: var(--ink-400); font-size: 18px; }
+</style>
+</head>
+<body>
+  <div class="preview-note" role="note"><span>设计示意 · 家教工作台 v1（2026-10-27）· 全部数字为示例数据，非真实数据；◆ = 需新增统计接口</span><span>1440 × 1040</span></div>
+
+  <header class="navbar">
+    <div class="logo"><span aria-hidden="true">鹅</span></div>
+    <span class="product">小鹅家教 · 运营管理平台</span>
+    <nav class="breadcrumb" aria-label="面包屑">工作台 / <b>家教工作台</b></nav>
+    <button class="user" type="button" aria-haspopup="menu"><span class="user-avatar" aria-hidden="true">管</span>admin ▾</button>
+  </header>
+
+  <div class="shell">
+    <nav class="menu-main" aria-label="主菜单">
+      <a href="#" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="2" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" /></svg>工作台</a>
+      <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" /></svg>课程管理</a>
+      <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5" /><circle cx="17" cy="9" r="2.5" /><path d="M16.5 14.5c2.6.2 4.4 1.9 5 4.8" /></svg>师生服务</a>
+      <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke-linecap="round" /></svg>系统运营</a>
+    </nav>
+    <nav class="menu-sub" aria-label="工作台子菜单">
+      <h2>工作台</h2>
+      <a href="#" aria-current="page">家教工作台</a>
+    </nav>
+
+    <main class="content">
+      <div class="page-head">
+        <div><h1>家教工作台</h1><p>今日运营概览 · 示例数据</p></div>
+        <button class="btn btn-secondary" type="button">↻ 刷新</button>
+      </div>
+
+      <div class="block-title"><h2>今日待办</h2><span class="note note-warn">◆ 需新增 GET /user/admin/stat/o2o（方案 §5.3）</span></div>
+      <ul class="todo-grid">
+        <li class="todo"><span class="todo-label">待审核资质<i>◆</i></span><strong>12</strong><a href="#">去审核 →</a></li>
+        <li class="todo"><span class="todo-label">今日约课<i>◆</i></span><strong>28</strong><a href="#">约课订单 →</a></li>
+        <li class="todo"><span class="todo-label">今日排课<i>◆</i></span><strong>46</strong><a href="#">查看排课 →</a></li>
+        <li class="todo"><span class="todo-label">待处理反馈<i>◆</i></span><strong>5</strong><a href="#">去处理 →</a></li>
+        <li class="todo is-danger"><span class="todo-label">支付异常<i>◆</i></span><strong>2</strong><a href="#">查看订单 →</a></li>
+        <li class="todo"><span class="todo-label">提现待审<i>◆</i></span><strong>3</strong><a href="#">去审核 →</a></li>
+      </ul>
+
+      <div class="block-title"><h2>经营数据</h2><span class="note">现有接口 GET /user/admin/stat/data</span></div>
+      <div class="stat-panel">
+        <div class="stat"><span>今日订单</span><strong>18</strong></div>
+        <div class="stat"><span>今日收入</span><strong>¥3,560.00</strong></div>
+        <div class="stat"><span>昨日订单</span><strong>23</strong></div>
+        <div class="stat"><span>昨日收入</span><strong>¥4,180.00</strong></div>
+        <div class="stat"><span>用户总数</span><strong>1,286</strong></div>
+        <div class="stat"><span>课程总数</span><strong>64</strong></div>
+        <div class="stat"><span>订单总数</span><strong>2,431</strong></div>
+        <div class="stat"><span>累计收入</span><strong>¥386,240.00</strong></div>
+      </div>
+
+      <div class="bottom-row">
+        <section class="panel" aria-labelledby="trend-title">
+          <div class="panel-head"><h2 id="trend-title">近 14 天注册与登录 <span class="note">GET /user/admin/stat/login?dates=-14</span></h2><div class="legend"><span class="login"><b>登录</b></span><span class="register"><b>注册</b></span></div></div>
+          <svg class="chart" viewBox="0 0 676 300" role="img" aria-label="近 14 天登录与注册趋势（示例数据）">
+            <g stroke="#F1F5F9" stroke-width="1">
+              <line x1="40" y1="20" x2="676" y2="20" /><line x1="40" y1="85" x2="676" y2="85" /><line x1="40" y1="150" x2="676" y2="150" /><line x1="40" y1="215" x2="676" y2="215" /><line x1="40" y1="280" x2="676" y2="280" />
+            </g>
+            <g fill="#64748B" font-size="12" text-anchor="end"><text x="32" y="24">400</text><text x="32" y="89">300</text><text x="32" y="154">200</text><text x="32" y="219">100</text><text x="32" y="284">0</text></g>
+            <polyline fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linejoin="round" points="60,150 107,137 154,124 201,143 248,111 295,98 342,118 389,85 436,72 483,92 530,66 577,79 624,59 671,46" />
+            <polyline fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linejoin="round" points="60,254 107,248 154,241 201,251 248,235 295,228 342,238 389,222 436,215 483,225 530,209 577,215 624,202 671,196" />
+            <g fill="#64748B" font-size="12" text-anchor="middle"><text x="60" y="298">10-14</text><text x="154" y="298">10-16</text><text x="248" y="298">10-18</text><text x="342" y="298">10-20</text><text x="436" y="298">10-22</text><text x="530" y="298">10-24</text><text x="624" y="298">10-26</text></g>
+          </svg>
+        </section>
+
+        <section class="panel" aria-labelledby="quick-title">
+          <div class="panel-head"><h2 id="quick-title">快捷入口</h2></div>
+          <ul class="quick">
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">审</span><span><strong>资质审核</strong><small>老师入驻资料与资质</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">约</span><span><strong>约课订单</strong><small>学员约课与取消</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">排</span><span><strong>排课管理</strong><small>调整时间与查看课表</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">记</span><span><strong>上课记录</strong><small>课堂笔记与作业</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">馈</span><span><strong>反馈工单</strong><small>处理学员与老师反馈</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+            <li><a href="#"><span class="quick-icon" aria-hidden="true">提</span><span><strong>提现审核</strong><small>老师提现申请</small></span><span class="chev" aria-hidden="true">›</span></a></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -27,6 +27,6 @@
   }
 
   .container {
-    margin-top: 50px;
+    margin-top: var(--xe-header-height);
   }
 </style>

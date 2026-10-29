@@ -36,7 +36,7 @@ async function setupInit() {
     if (router.currentRoute.value.path !== PATH.URL_LOGIN) {
       router.replace(PATH.URL_LOGIN)
     }
-    ElMessage.error('Session restore failed, please log in again.')
+    ElMessage.error('登录已失效，请重新登录')
   }
 }
 

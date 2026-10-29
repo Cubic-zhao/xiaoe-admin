@@ -1,22 +1,14 @@
 <template>
   <div class="info">
-    <a href="https://www.roncoo.net/?from=os-admin" target="_blank" class="info-home">
-      <el-icon><Monitor /></el-icon>&nbsp;领课网络
-    </a>
-    <a href="/" target="_blank" class="info-home">
-      <el-icon><House /></el-icon>&nbsp;首页
-    </a>
-    <el-dropdown class="user-info">
-      <div>
-        {{ realName }}
-        <el-icon class="el-icon--right">
-          <arrow-down />
-        </el-icon>
+    <el-dropdown>
+      <div class="user-trigger">
+        <span class="user-avatar" aria-hidden="true">{{ avatarText }}</span>
+        <span class="user-name">{{ realName }}</span>
+        <el-icon class="user-arrow"><arrow-down /></el-icon>
       </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>个人信息</el-dropdown-item>
-          <el-dropdown-item divided @click="onLogout">退出登录</el-dropdown-item>
+          <el-dropdown-item @click="onLogout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -26,13 +18,18 @@
 <script setup>
   import { ArrowDown } from '@element-plus/icons-vue'
   import { useUserStore } from '@/store/modules/user'
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import { removeToken } from '@/utils/cookie'
   import { ElMessageBox } from 'element-plus'
   import { useRouter } from 'vue-router'
   import { PATH } from '@/utils/constants/system'
 
   const realName = ref(useUserStore().realName)
+  const avatarText = computed(() =>
+    String(realName.value || '管')
+      .slice(0, 1)
+      .toUpperCase()
+  )
   const router = useRouter()
 
   /**
@@ -54,26 +51,43 @@
   .info {
     display: flex;
     align-items: center;
-    float: right;
     height: 100%;
-    line-height: 50px;
+    margin-left: auto;
+    margin-right: 24px;
+  }
 
-    .info-home {
-      display: flex;
-      align-items: center;
-      margin: 0 10px;
+  .user-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: var(--xe-ink-900);
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--xe-ink-100);
+    }
+
+    // Element Plus 对下拉触发器设置了 outline:none，这里用焦点环保证键盘可见
+    &:focus-visible {
+      box-shadow: var(--xe-focus-ring);
     }
   }
 
-  .user-info {
-    align-items: center;
-    float: right;
-    margin-right: 20px;
-    height: 100%;
-    line-height: 50px;
+  .user-avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--xe-brand-100);
+    color: var(--xe-brand-700);
+    font-weight: 700;
+  }
 
-    :focus-visible {
-      outline: 0px;
-    }
+  .user-arrow {
+    color: var(--xe-ink-500);
   }
 </style>

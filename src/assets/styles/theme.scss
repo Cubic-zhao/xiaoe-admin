@@ -1,0 +1,81 @@
+// 小鹅家教运营管理平台 · 主题变量
+// 依据 xiaoe-education-admin/60_Web与Admin美化设计方案.md §2、§4.1；色阶按 Element Plus 混色规则计算
+// （light-N 与白色按 N×10% 混合，dark-2 与黑色按 20% 混合）。
+// 由 index.scss 顶部引入：删除那一行 @use 即恢复 Element Plus 默认配色。
+// Element Plus 在 .el-header 上自带 --el-header-height，写在 :root 不生效，顶栏高度在 Navbar 组件内设置。
+:root {
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #6692f1;
+  --el-color-primary-light-5: #92b1f5;
+  --el-color-primary-light-7: #bed0f9;
+  --el-color-primary-light-8: #d3e0fb;
+  --el-color-primary-light-9: #e9effd;
+  --el-color-primary-dark-2: #1e4fbc;
+  --el-color-success: #059669;
+  --el-color-success-light-3: #50b696;
+  --el-color-success-light-5: #82cab4;
+  --el-color-success-light-7: #b4e0d2;
+  --el-color-success-light-8: #cdeae1;
+  --el-color-success-light-9: #e6f4f0;
+  --el-color-success-dark-2: #047854;
+  --el-color-warning: #d97706;
+  --el-color-warning-light-3: #e4a051;
+  --el-color-warning-light-5: #ecbb82;
+  --el-color-warning-light-7: #f4d6b4;
+  --el-color-warning-light-8: #f7e4cd;
+  --el-color-warning-light-9: #fbf1e6;
+  --el-color-warning-dark-2: #ae5f05;
+  --el-color-danger: #dc2626;
+  --el-color-danger-light-3: #e66767;
+  --el-color-danger-light-5: #ee9292;
+  --el-color-danger-light-7: #f4bebe;
+  --el-color-danger-light-8: #f8d4d4;
+  --el-color-danger-light-9: #fce9e9;
+  --el-color-danger-dark-2: #b01e1e;
+  --el-color-error: #dc2626;
+  --el-color-error-light-3: #e66767;
+  --el-color-error-light-5: #ee9292;
+  --el-color-error-light-7: #f4bebe;
+  --el-color-error-light-8: #f8d4d4;
+  --el-color-error-light-9: #fce9e9;
+  --el-color-error-dark-2: #b01e1e;
+  --el-color-info: #64748b;
+  --el-color-info-light-3: #929eae;
+  --el-color-info-light-5: #b2bac5;
+  --el-color-info-light-7: #d0d5dc;
+  --el-color-info-light-8: #e0e3e8;
+  --el-color-info-light-9: #f0f1f3;
+  --el-color-info-dark-2: #505d6f;
+  --el-border-radius-base: 8px;
+  --el-bg-color-page: #f1f5f9;
+  --el-text-color-primary: #0f172a;
+  --el-text-color-regular: #334155;
+  --el-text-color-secondary: #64748b;
+  --el-border-color: #e2e8f0;
+  --el-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+
+  // 布局与工作台共用的设计 token（方案 §2.1、§2.3、§4.2）
+  --xe-brand-50: #eff6ff;
+  --xe-brand-100: #dbeafe;
+  --xe-brand-500: #3b82f6;
+  --xe-brand-600: #2563eb;
+  --xe-brand-700: #1d4ed8;
+  --xe-brand-800: #1e40af;
+  --xe-ink-900: #0f172a;
+  --xe-ink-800: #1e293b;
+  --xe-ink-700: #334155;
+  --xe-ink-600: #475569;
+  --xe-ink-500: #64748b;
+  --xe-ink-400: #94a3b8;
+  --xe-ink-300: #cbd5e1;
+  --xe-ink-200: #e2e8f0;
+  --xe-ink-100: #f1f5f9;
+  --xe-ink-50: #f8fafc;
+  --xe-danger-700: #b91c1c;
+  --xe-radius-md: 12px;
+  --xe-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --xe-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+  --xe-header-height: 56px;
+  --xe-menu-main-width: 88px;
+  --xe-menu-sub-width: 168px;
+}
