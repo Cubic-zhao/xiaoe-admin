@@ -72,6 +72,14 @@ export const usersApi = {
     return getRequest('/user/admin/order/info/stat?userId=' + data.userId)
   },
 
+  // order pay record (read-only)
+  orderPayPage: (params, pageCurrent = 1, pageSize = 20) => {
+    return postRequest('/user/admin/order/pay/page', { pageCurrent, pageSize, ...params })
+  },
+  orderPayView: (data) => {
+    return getRequest('/user/admin/order/pay/view?id=' + data.id)
+  },
+
   // order refund audit page
   refundPage: (params, pageCurrent = 1, pageSize = 20) => {
     return postRequest('/user/admin/order/refund/page', { pageCurrent, pageSize, ...params })
@@ -153,12 +161,6 @@ export const usersApi = {
   },
   tutorQualificationReject: (data) => {
     return putRequest('/user/admin/tutor/qualification/reject', data)
-  },
-  tutorIntroPage: (params, pageCurrent = 1, pageSize = 20) => {
-    return postRequest('/user/admin/tutor/intro/page', { pageCurrent, pageSize, ...params })
-  },
-  tutorIntroEdit: (data) => {
-    return putRequest('/user/admin/tutor/intro/edit', data)
   },
   tutorOperationPage: (params, pageCurrent = 1, pageSize = 20) => {
     return postRequest('/user/admin/tutor/operation/page', { pageCurrent, pageSize, ...params })

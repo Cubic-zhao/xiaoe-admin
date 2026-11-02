@@ -93,13 +93,24 @@ function toObj(attr) {
   return obj
 }
 
+export const ENCRYPT_KEY_MISSING_MESSAGE = '站点配置未加载，请刷新页面后重试'
+
+/**
+ * RSA 加密密码；拿不到公钥或加密失败时抛错，调用方提示后不得提交
+ */
 export function encrypt(password, publicKey) {
   if (!publicKey) {
-    publicKey = useWebsiteStore().getInfo.rsaLoginPublicKey
-    console.log(publicKey)
+    publicKey = useWebsiteStore().getInfo?.rsaLoginPublicKey
+  }
+  if (!publicKey) {
+    throw new Error(ENCRYPT_KEY_MISSING_MESSAGE)
   }
 
   const crypt = new JSEncrypt()
   crypt.setPublicKey(publicKey)
-  return crypt.encrypt(password)
+  const result = crypt.encrypt(password)
+  if (!result) {
+    throw new Error(ENCRYPT_KEY_MISSING_MESSAGE)
+  }
+  return result
 }

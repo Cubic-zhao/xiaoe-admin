@@ -4,73 +4,73 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item>
-            <el-input v-model="query.menuName" placeholder="Menu name" clearable />
+            <el-input v-model="query.menuName" placeholder="菜单名称" clearable />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleQuery()">Search</el-button>
+            <el-button type="primary" @click="handleQuery()">查询</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="resetQuery()">Refresh</el-button>
+            <el-button @click="resetQuery()">刷新</el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="button_bar">
-        <el-button v-if="canSaveMenu" type="primary" @click="openFormModal(null, '0')">Add Menu</el-button>
+        <el-button v-if="canSaveMenu" type="primary" @click="openFormModal(null, '0')">新增菜单</el-button>
       </div>
     </div>
 
     <el-table v-loading="page.loading" :data="page.list" :tree-props="{ children: 'childrenList', hasChildren: 'hasChildren' }" row-key="id">
-      <el-table-column label="Name" min-width="180" prop="menuName">
+      <el-table-column label="名称" min-width="180" prop="menuName">
         <template #default="scope">
           <span v-if="scope.row.menuIcon"><icon :name="scope.row.menuIcon" class="menu-icon" /></span>
           <span class="menu-name">{{ scope.row.menuName }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Type" min-width="100">
+      <el-table-column label="类型" min-width="100">
         <template #default="scope">
-          <el-tag v-if="scope.row.menuType === 2 && !scope.row.isShow">Route</el-tag>
+          <el-tag v-if="scope.row.menuType === 2 && !scope.row.isShow">隐藏路由</el-tag>
           <enum-view v-else :enum-name="'MenuTypeEnum'" :enum-value="scope.row.menuType" />
         </template>
       </el-table-column>
 
-      <el-table-column label="Path / Component" min-width="240">
+      <el-table-column label="路由 / 组件" min-width="240">
         <template #default="scope">
           <el-tag v-if="scope.row.path">{{ scope.row.path }}</el-tag>
           <div class="table-secondary">{{ scope.row.component || '-' }}</div>
         </template>
       </el-table-column>
 
-      <el-table-column label="Permission / APIs" min-width="260">
+      <el-table-column label="权限键 / 接口" min-width="260">
         <template #default="scope">
           <el-tag v-if="scope.row.permission">{{ scope.row.permission }}</el-tag>
           <div class="table-secondary table-pre">{{ scope.row.apis || '-' }}</div>
         </template>
       </el-table-column>
 
-      <el-table-column label="Sort" min-width="80" prop="sort" />
+      <el-table-column label="排序" min-width="80" prop="sort" />
 
-      <el-table-column label="Status" min-width="100">
+      <el-table-column label="状态" min-width="100">
         <template #default="scope">
           <enum-view :enum-name="'StatusIdEnum'" :enum-value="scope.row.statusId" />
         </template>
       </el-table-column>
 
-      <el-table-column label="Actions" width="360" fixed="right">
+      <el-table-column label="操作" width="360" fixed="right">
         <template #default="scope">
           <el-button v-if="scope.row.menuType !== 3 && canSaveMenu" text type="primary" @click="openFormModal(null, scope.row.id)">
-            Add Child
+            新增下级
           </el-button>
 
           <el-divider v-if="scope.row.menuType !== 3 && canSaveMenu" direction="vertical" />
 
-          <el-button v-if="canEditMenu" text type="primary" @click="openFormModal(scope.row)">Edit</el-button>
+          <el-button v-if="canEditMenu" text type="primary" @click="openFormModal(scope.row)">编辑</el-button>
 
           <el-divider v-if="canSaveMenu && getPresetActions(scope.row).length" direction="vertical" />
 
           <el-dropdown v-if="canSaveMenu && getPresetActions(scope.row).length">
             <el-button text type="primary">
-              Android Presets
+              常用预设
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -88,7 +88,7 @@
 
           <el-dropdown v-if="canManageMore">
             <el-button text type="primary">
-              More
+              更多
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -96,10 +96,10 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item v-if="canEditMenu" @click="handleStatus(scope.row)">
-                  <span>{{ scope.row.statusId === 0 ? 'Enable' : 'Disable' }}</span>
+                  <span>{{ scope.row.statusId === 0 ? '启用' : '禁用' }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="canDeleteMenu" @click="handleDelete(scope.row)">
-                  <span>Delete</span>
+                  <span>删除</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -122,20 +122,20 @@
   import { hasPermission } from '@/utils/permission.js'
 
   const basePresetActions = [
-    { label: 'Message Page', value: 'msg-page' },
-    { label: 'Withdraw Audit Page', value: 'withdraw-page' }
+    { label: '消息推送管理页', value: 'msg-page' },
+    { label: '提现审核页', value: 'withdraw-page' }
   ]
 
   const presetActionMap = {
     'msg:page': [
-      { label: 'Message Save Button', value: 'msg-save' },
-      { label: 'Message Edit Button', value: 'msg-edit' },
-      { label: 'Message Delete Button', value: 'msg-delete' }
+      { label: '消息新增按钮', value: 'msg-save' },
+      { label: '消息编辑按钮', value: 'msg-edit' },
+      { label: '消息删除按钮', value: 'msg-delete' }
     ],
     'wallet:withdraw:audit:page': [
-      { label: 'Withdraw Pass Button', value: 'withdraw-pass' },
-      { label: 'Withdraw Reject Button', value: 'withdraw-reject' },
-      { label: 'Withdraw Audit Note Permission', value: 'withdraw-remark' }
+      { label: '提现通过按钮', value: 'withdraw-pass' },
+      { label: '提现驳回按钮', value: 'withdraw-reject' },
+      { label: '提现审核备注权限', value: 'withdraw-remark' }
     ]
   }
 

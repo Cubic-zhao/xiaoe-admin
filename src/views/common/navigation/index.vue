@@ -48,9 +48,9 @@
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="handleStatus(scope.row)">
-                  <el-button v-if="scope.row.statusId == 0" v-permission="'website:nav:edit'" text type="primary">启用</el-button>
-                  <el-button v-if="scope.row.statusId == 1" v-permission="'website:nav:edit'" text type="primary">禁用</el-button>
+                <el-dropdown-item v-permission="'website:nav:edit'" @click="handleStatus(scope.row)">
+                  <el-button v-if="scope.row.statusId == 0" text type="primary">启用</el-button>
+                  <el-button v-if="scope.row.statusId == 1" text type="primary">禁用</el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
                   <el-button v-permission="'website:nav:delete'" text type="primary" @click="handleDelete(scope.row)">删除</el-button>

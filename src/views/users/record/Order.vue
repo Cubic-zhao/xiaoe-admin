@@ -51,18 +51,13 @@
       <el-table-column :min-width="100" label="订单状态">
         <template #default="scope">
           <div>{{ scope.row.orderStatusLabel || '-' }}</div>
-          <div class="table-secondary">Mobile: {{ scope.row.mobileStatus || '-' }}</div>
+          <div class="table-secondary">移动端：{{ scope.row.mobileStatus || '-' }}</div>
         </template>
       </el-table-column>
       <el-table-column :min-width="150" label="异常治理">
         <template #default="scope">
           <el-tag effect="plain" :type="anomalyTagType(scope.row.anomalyCode)">{{ scope.row.anomalyLabel || '待确认' }}</el-tag>
           <div class="table-secondary order-multi-line">{{ scope.row.anomalyHint || '-' }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column :min-width="150" label="用户结果回放">
-        <template #default="scope">
-          <div class="order-multi-line">{{ scope.row.androidReplayHint || '-' }}</div>
         </template>
       </el-table-column>
       <el-table-column :min-width="150" label="运营建议">
@@ -84,7 +79,7 @@
       </el-table-column>
       <el-table-column :width="150" fixed="right" label="操作">
         <template #default="scope">
-          <el-button text type="info" @click="openReplayDrawer(scope.row)">回放</el-button>
+          <el-button text type="info" @click="openReplayDrawer(scope.row)">详情</el-button>
           <el-divider direction="vertical" />
           <el-button v-permission="'order:remark'" text type="primary" @click="openFormModal(scope.row)">写备注</el-button>
         </template>
@@ -93,7 +88,7 @@
     <pagination v-model:current-page="page.pageCurrent" v-model:page-size="page.pageSize" :total="page.totalCount" @pagination="handlePage" />
     <order-form ref="formRef" @refresh="handlePage" />
 
-    <el-drawer v-model="replayDrawer.visible" size="720px" title="订单异常回放">
+    <el-drawer v-model="replayDrawer.visible" size="720px" title="订单异常详情">
       <el-descriptions v-if="replayDrawer.row" :column="2" border>
         <el-descriptions-item label="订单号">{{ replayDrawer.row.orderNo }}</el-descriptions-item>
         <el-descriptions-item label="订单状态">{{ replayDrawer.row.orderStatusLabel || '-' }}</el-descriptions-item>
@@ -103,7 +98,6 @@
         <el-descriptions-item label="移动端状态">{{ replayDrawer.row.mobileStatus || '-' }}</el-descriptions-item>
         <el-descriptions-item label="异常说明" :span="2">{{ replayDrawer.row.anomalyHint || '-' }}</el-descriptions-item>
         <el-descriptions-item label="运营建议" :span="2">{{ replayDrawer.row.governanceSuggestion || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="Android 回放" :span="2">{{ replayDrawer.row.androidReplayHint || '-' }}</el-descriptions-item>
         <el-descriptions-item label="回调审计" :span="2">{{ replayDrawer.row.callbackAuditStatus || '-' }}</el-descriptions-item>
         <el-descriptions-item label="查单审计" :span="2">{{ replayDrawer.row.reconciliationStatus || '-' }}</el-descriptions-item>
         <el-descriptions-item label="客户备注" :span="2">{{ replayDrawer.row.remarkCus || '-' }}</el-descriptions-item>
@@ -128,7 +122,8 @@
     { label: '订单关闭', value: 'cancelled' },
     { label: '支付处理中', value: 'paying' },
     { label: '待支付超时', value: 'timeout' },
-    { label: '数据不一致', value: 'data_mismatch' }
+    { label: '数据不一致', value: 'data_mismatch' },
+    { label: '已退款', value: 'refunded' }
   ]
 
   const formRef = ref()
@@ -159,6 +154,8 @@
         return 'primary'
       case 'cancelled':
         return 'info'
+      case 'refunded':
+        return 'warning'
       default:
         return 'info'
     }

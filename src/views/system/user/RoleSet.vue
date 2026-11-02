@@ -12,13 +12,13 @@
     <div class="page_head" style="text-align: left">
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
-          <el-form-item label="Role Name">
+          <el-form-item label="角色名称">
             <el-input v-model="query.roleName" clearable />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleQuery()">Search</el-button>
-            <el-button @click="resetQuery()">Reset</el-button>
-            <el-button @click="clearAllRoles">Clear All</el-button>
+            <el-button type="primary" @click="handleQuery()">查询</el-button>
+            <el-button @click="resetQuery()">重置</el-button>
+            <el-button @click="clearAllRoles">全部清空</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -26,12 +26,12 @@
 
     <el-table ref="tableRef" v-loading="page.loading" :data="page.list" row-key="id" @selection-change="handleSelectionChange">
       <el-table-column type="selection" :width="50" />
-      <el-table-column label="Role Name" prop="roleName" />
-      <el-table-column label="Remark" prop="remark" show-overflow-tooltip />
-      <el-table-column label="Selected" width="100">
+      <el-table-column label="角色名称" prop="roleName" />
+      <el-table-column label="备注" prop="remark" show-overflow-tooltip />
+      <el-table-column label="已选" width="100">
         <template #default="scope">
-          <el-tag v-if="selectedRoleIds.includes(scope.row.id)" type="success" effect="plain">Yes</el-tag>
-          <span v-else class="table-secondary">No</span>
+          <el-tag v-if="selectedRoleIds.includes(scope.row.id)" type="success" effect="plain">是</el-tag>
+          <span v-else class="table-secondary">否</span>
         </template>
       </el-table-column>
     </el-table>
@@ -40,10 +40,10 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <span class="footer-info">Selected {{ selectedRoleIds.length }} roles</span>
+        <span class="footer-info">已选 {{ selectedRoleIds.length }} 个角色</span>
         <span class="handle_bar">
-          <el-button @click="onClose">Cancel</el-button>
-          <el-button :loading="saving" type="primary" @click="onSubmit">Confirm</el-button>
+          <el-button @click="onClose">取消</el-button>
+          <el-button :loading="saving" type="primary" @click="onSubmit">确定</el-button>
         </span>
       </div>
     </template>
@@ -66,7 +66,7 @@
   const userLabel = ref('')
   const selectedRoleIds = ref([])
 
-  const dialogTitle = computed(() => (userLabel.value ? `Assign Roles - ${userLabel.value}` : 'Assign Roles'))
+  const dialogTitle = computed(() => (userLabel.value ? `分配角色 - ${userLabel.value}` : '分配角色'))
 
   const { page, handlePage, query, handleQuery, resetQuery } = useTable({
     page: systemApi.sysRolePage
@@ -112,7 +112,7 @@
   const clearAllRoles = () => {
     selectedRoleIds.value = []
     tableRef.value?.clearSelection()
-    ElMessage.success('Role selections cleared')
+    ElMessage.success('已清空角色选择')
   }
 
   const onSubmit = async () => {
@@ -126,7 +126,7 @@
         userId: userId.value,
         roleIdList: selectedRoleIds.value
       })
-      ElMessage.success('User roles updated')
+      ElMessage.success('用户角色已更新')
       emit('refresh')
       onClose()
     } finally {

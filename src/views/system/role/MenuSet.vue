@@ -12,19 +12,19 @@
     <div class="page_head">
       <div class="search_bar clearfix">
         <el-form inline label-width="80px">
-          <el-form-item label="Keyword">
-            <el-input v-model="filterKeyword" clearable placeholder="Menu name / path / permission" />
+          <el-form-item label="关键字">
+            <el-input v-model="filterKeyword" clearable placeholder="菜单名称 / 路由 / 权限键" />
           </el-form-item>
           <el-form-item>
-            <el-button @click="selectAndroidOps">Select Android Ops</el-button>
-            <el-button @click="clearSelection">Clear All</el-button>
+            <el-button @click="selectAndroidOps">勾选消息与提现权限</el-button>
+            <el-button @click="clearSelection">全部清空</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
 
     <div v-loading="loading" class="tree-wrapper">
-      <el-empty v-if="!loading && !treeList.length" description="No menu data" />
+      <el-empty v-if="!loading && !treeList.length" description="暂无菜单数据" />
       <el-tree
         v-else
         ref="treeRef"
@@ -32,7 +32,7 @@
         :default-expand-all="true"
         :filter-node-method="filterNode"
         :props="defaultProps"
-        empty-text="No menu data"
+        empty-text="暂无菜单数据"
         highlight-current
         node-key="id"
         show-checkbox
@@ -48,9 +48,9 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <span class="footer-info">Selected {{ checkedCount }} menu nodes</span>
-        <el-button @click="onClose">Cancel</el-button>
-        <el-button :loading="saving" type="primary" @click="onSubmit">Confirm</el-button>
+        <span class="footer-info">已选 {{ checkedCount }} 个菜单节点</span>
+        <el-button @click="onClose">取消</el-button>
+        <el-button :loading="saving" type="primary" @click="onSubmit">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -88,7 +88,7 @@
     children: 'childrenList'
   }
 
-  const dialogTitle = computed(() => (roleName.value ? `Assign Menus - ${roleName.value}` : 'Assign Menus'))
+  const dialogTitle = computed(() => (roleName.value ? `分配菜单 - ${roleName.value}` : '分配菜单'))
   const checkedCount = computed(() => {
     if (!treeRef.value) {
       return 0
@@ -143,7 +143,7 @@
     const current = normalizeKeys(treeRef.value.getCheckedKeys().concat(treeRef.value.getHalfCheckedKeys()))
     const presetIds = collectAndroidPresetIds(treeList.value)
     treeRef.value.setCheckedKeys(normalizeKeys(current.concat(presetIds)))
-    ElMessage.success('Android-first menu presets selected')
+    ElMessage.success('已勾选消息推送与提现审核相关权限')
   }
 
   const onSubmit = async () => {
@@ -158,7 +158,7 @@
     try {
       const menuIdList = normalizeKeys(treeRef.value.getCheckedKeys().concat(treeRef.value.getHalfCheckedKeys()))
       await systemApi.sysMenuRoleSave({ roleId: roleId.value, menuIdList })
-      ElMessage.success('Role menus updated')
+      ElMessage.success('角色菜单已更新')
       emit('refresh')
       onClose()
     } finally {

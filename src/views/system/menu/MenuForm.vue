@@ -10,37 +10,37 @@
     @close="onClose"
   >
     <el-form ref="formRef" :model="formModel" :rules="rules" label-width="96px" @submit.prevent>
-      <el-form-item v-if="isCreateMode" label="Preset">
+      <el-form-item v-if="isCreateMode" label="预设">
         <div class="preset-row">
-          <el-select v-model="presetKey" class="preset-select" clearable filterable placeholder="Select a preset">
+          <el-select v-model="presetKey" class="preset-select" clearable filterable placeholder="选择预设">
             <el-option v-for="item in presetOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-          <el-button :disabled="!presetKey" type="primary" plain @click="applyPreset">Apply</el-button>
+          <el-button :disabled="!presetKey" type="primary" plain @click="applyPreset">应用</el-button>
         </div>
-        <div class="tip-info">Use presets to reduce route, component, permission, and API mismatches for Android-first pages.</div>
+        <div class="tip-info">使用预设可减少路由、组件、权限键与接口填写不一致。</div>
       </el-form-item>
 
-      <el-form-item label="Type" prop="menuType">
+      <el-form-item label="类型" prop="menuType">
         <enum-radio v-model="formModel.menuType" :enum-name="'MenuTypeEnum'" />
       </el-form-item>
 
-      <el-form-item label="Name" prop="menuName">
+      <el-form-item label="名称" prop="menuName">
         <el-input v-model="formModel.menuName" class="form-group" maxlength="50" show-word-limit />
       </el-form-item>
 
-      <el-form-item v-if="formModel.menuType === 2" label="Path" prop="path">
+      <el-form-item v-if="formModel.menuType === 2" label="路由" prop="path">
         <el-input v-model="formModel.path" class="form-group" maxlength="50" placeholder="/users/withdraw" show-word-limit />
       </el-form-item>
 
-      <el-form-item v-if="formModel.menuType === 2" label="Component" prop="component">
+      <el-form-item v-if="formModel.menuType === 2" label="组件" prop="component">
         <el-input v-model="formModel.component" class="form-group" maxlength="100" placeholder="/users/withdraw/index.vue" show-word-limit />
       </el-form-item>
 
-      <el-form-item v-if="formModel.menuType !== 1" label="Permission" prop="permission">
+      <el-form-item v-if="formModel.menuType !== 1" label="权限键" prop="permission">
         <el-input v-model="formModel.permission" class="form-group" maxlength="100" show-word-limit />
       </el-form-item>
 
-      <el-form-item v-if="formModel.menuType !== 1" label="APIs" prop="apis">
+      <el-form-item v-if="formModel.menuType !== 1" label="接口" prop="apis">
         <el-input
           v-model="formModel.apis"
           :rows="5"
@@ -50,33 +50,33 @@
           placeholder="/user/admin/wallet/withdraw/page&#10;/user/admin/wallet/withdraw/view"
           show-word-limit
         />
-        <div class="tip-info">One API path per line is recommended so menu authorization is easier to verify.</div>
+        <div class="tip-info">建议每行填写一个接口路径，便于核对菜单授权。</div>
       </el-form-item>
 
-      <el-form-item v-if="formModel.menuType === 2" label="Mode" prop="isShow">
-        <el-switch v-model="formModel.isShow" inline-prompt active-text="Menu" inactive-text="Route" />
-        <span class="tip-info">Menu mode is visible in navigation. Route mode stays hidden but still participates in routing.</span>
+      <el-form-item v-if="formModel.menuType === 2" label="显示方式" prop="isShow">
+        <el-switch v-model="formModel.isShow" inline-prompt active-text="菜单" inactive-text="路由" />
+        <span class="tip-info">菜单模式在导航中显示；路由模式不在导航中显示，但仍可访问。</span>
       </el-form-item>
 
-      <el-form-item v-if="isRootMenu" label="Icon" prop="menuIcon">
+      <el-form-item v-if="isRootMenu" label="图标" prop="menuIcon">
         <icon :name="formModel.menuIcon" />
-        <el-button link type="primary" @click="handleIcon">Select Icon</el-button>
+        <el-button link type="primary" @click="handleIcon">选择图标</el-button>
         <selector-svg v-if="iconVisible" :visible="iconVisible" @update="handleUpdateIcon" @close="onCloseIcon" />
       </el-form-item>
 
-      <el-form-item label="Sort" prop="sort">
+      <el-form-item label="排序" prop="sort">
         <el-input-number v-model="formModel.sort" :min="0" controls-position="right" />
       </el-form-item>
 
-      <el-form-item label="Remark" prop="remark">
+      <el-form-item label="备注" prop="remark">
         <el-input v-model="formModel.remark" :rows="3" maxlength="255" show-word-limit type="textarea" />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="onClose">Cancel</el-button>
-        <el-button type="primary" @click="onSubmit">Confirm</el-button>
+        <el-button @click="onClose">取消</el-button>
+        <el-button type="primary" @click="onSubmit">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -111,7 +111,7 @@
       permission: 'msg:page',
       apis: ['/user/admin/msg/page', '/user/admin/msg/view', '/user/admin/msg/save', '/user/admin/msg/edit', '/user/admin/msg/delete'].join('\n'),
       isShow: true,
-      remark: 'Android \u6d88\u606f\u4e2d\u5fc3\u540e\u53f0\u8fd0\u8425\u9875'
+      remark: '\u6d88\u606f\u4e2d\u5fc3\u540e\u53f0\u8fd0\u8425\u9875'
     },
     'msg-save': {
       menuType: 3,
@@ -147,7 +147,7 @@
         '/user/admin/wallet/withdraw/reject'
       ].join('\n'),
       isShow: true,
-      remark: 'Android \u94b1\u5305\u63d0\u73b0\u5ba1\u6838\u9875'
+      remark: '\u94b1\u5305\u63d0\u73b0\u5ba1\u6838\u9875'
     },
     'withdraw-pass': {
       menuType: 3,
@@ -184,7 +184,7 @@
       return
     }
     if (!String(value || '').trim()) {
-      callback(new Error('Path is required for route menus'))
+      callback(new Error('页面菜单必须填写路由'))
       return
     }
     callback()
@@ -196,7 +196,7 @@
       return
     }
     if (!String(value || '').trim()) {
-      callback(new Error('Component is required for route menus'))
+      callback(new Error('页面菜单必须填写组件'))
       return
     }
     callback()
@@ -208,15 +208,15 @@
       return
     }
     if (!String(value || '').trim()) {
-      callback(new Error('Permission is required for non-directory menus'))
+      callback(new Error('页面与按钮必须填写权限键'))
       return
     }
     callback()
   }
 
   const rules = {
-    menuType: [{ required: true, message: 'Type is required', trigger: 'blur' }],
-    menuName: [{ required: true, message: 'Name is required', trigger: 'blur' }],
+    menuType: [{ required: true, message: '请选择类型', trigger: 'blur' }],
+    menuName: [{ required: true, message: '请填写名称', trigger: 'blur' }],
     path: [{ validator: validateRoutePath, trigger: 'blur' }],
     component: [{ validator: validateRouteComponent, trigger: 'blur' }],
     permission: [{ validator: validatePermission, trigger: 'blur' }]
@@ -239,7 +239,7 @@
 
   const formModel = reactive({ ...formDefault })
 
-  const dialogTitle = computed(() => (formModel.id ? 'Edit Menu' : 'Add Menu'))
+  const dialogTitle = computed(() => (formModel.id ? '编辑菜单' : '新增菜单'))
   const isCreateMode = computed(() => !formModel.id)
   const isRootMenu = computed(() => String(formModel.parentId ?? '0') === '0')
 
@@ -265,7 +265,7 @@
     const currentSort = formModel.sort ?? 1
     Object.assign(formModel, { ...formDefault, parentId: currentParentId, sort: currentSort }, preset)
     if (!silent) {
-      ElMessage.success('Preset applied')
+      ElMessage.success('已应用预设')
     }
   }
 
@@ -319,7 +319,7 @@
     if (!valid) return
 
     if (loading.value) {
-      ElMessage.warning('Submitting...')
+      ElMessage.warning('正在提交···')
       return
     }
 
@@ -328,10 +328,10 @@
       const payload = buildPayload()
       if (formModel.id) {
         await systemApi.sysMenuEdit(payload)
-        ElMessage.success('Updated successfully')
+        ElMessage.success('修改成功')
       } else {
         await systemApi.sysMenuSave(payload)
-        ElMessage.success('Created successfully')
+        ElMessage.success('添加成功')
       }
       emit('refresh')
       onClose()

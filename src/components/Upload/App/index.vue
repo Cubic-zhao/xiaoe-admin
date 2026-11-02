@@ -12,7 +12,8 @@
   import { uploadApi } from '@/api/upload'
   import { ref } from 'vue'
 
-  const fileType = 'application/vnd.android.package-archive,ipa'
+  // 按扩展名校验，与后端安装包上传口径一致；浏览器给出的 MIME 不可靠（.ipa 常为空或 octet-stream）
+  const allowedExtensions = ['.apk', '.ipa']
   const emit = defineEmits(['callback'])
   const progress = ref(0)
   const loading = ref(false)
@@ -22,8 +23,9 @@
    * @param rawFile
    */
   const beforeUpload = (rawFile) => {
-    if (fileType.indexOf(rawFile.type) === -1) {
-      ElMessage.error('格式不支持：' + rawFile.type)
+    const name = (rawFile.name || '').toLowerCase()
+    if (!allowedExtensions.some((ext) => name.endsWith(ext))) {
+      ElMessage.error('只支持上传 .apk 或 .ipa 安装包')
       return false
     }
     return true
@@ -35,6 +37,7 @@
    */
   const onUpload = (file) => {
     loading.value = true
+    progress.value = 0
     uploadApi
       .app(file.file, (p) => {
         progress.value = p
@@ -42,6 +45,11 @@
       .then((res) => {
         loading.value = false
         emit('callback', res.docUrl)
+      })
+      .catch(() => {
+        // 失败原因（413 文件过大、超时、业务错误）由请求层统一提示，这里只复位进度
+        loading.value = false
+        progress.value = 0
       })
   }
 </script>

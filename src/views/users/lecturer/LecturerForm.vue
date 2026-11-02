@@ -88,7 +88,6 @@
   const visible = ref(false)
   const onOpen = (item) => {
     if (item) {
-      console.log(item)
       usersApi.lecturerView({ id: item.id }).then((res) => {
         Object.assign(formModel, res)
       })

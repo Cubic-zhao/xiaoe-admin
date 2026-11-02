@@ -95,7 +95,7 @@
           <el-divider direction="vertical" />
           <el-dropdown>
             <el-button text type="primary">
-              More
+              更多
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -140,7 +140,7 @@
             placeholder="支持逗号、空格或换行分隔多个手机号"
           />
         </el-form-item>
-        <el-alert type="info" :closable="false" show-icon title="投放后会真实写入 msg_user 记录。Android 刷新消息页或角标后，应能消费到未读变化。" />
+        <el-alert type="info" :closable="false" show-icon title="投放后为每个目标用户写入一条消息记录，用户刷新消息页即可看到，并计入未读数。" />
       </el-form>
       <template #footer>
         <el-button @click="closeDispatchDialog()">取消</el-button>
@@ -169,29 +169,10 @@
           </el-card>
         </div>
 
-        <el-alert :closable="false" type="info" show-icon :title="effectDrawer.summary.effectHint || '当前还没有形成可验证的投放证据。'" />
-
-        <el-card shadow="never" class="effect-verification-card">
-          <template #header>
-            <div class="effect-card-header">联调验收提示</div>
-          </template>
-          <div class="effect-verification-grid">
-            <div class="effect-verification-item">
-              <div class="effect-verification-label">读达率</div>
-              <div class="effect-verification-value">{{ formatReadRate(effectDrawer.summary) }}</div>
-            </div>
-            <div class="effect-verification-item">
-              <div class="effect-verification-label">Android 侧预期</div>
-              <div class="effect-verification-text">{{ buildAndroidExpectation(effectDrawer.summary) }}</div>
-            </div>
-            <div class="effect-verification-item">
-              <div class="effect-verification-label">建议取证动作</div>
-              <div class="effect-verification-text">1. 先记录投放前未读数 2. 执行投放 3. Android 下拉刷新消息页/返回首页观察角标 4. 补录屏与接口摘要。</div>
-            </div>
-          </div>
-        </el-card>
+        <el-alert :closable="false" type="info" show-icon :title="effectDrawer.summary.effectHint || '该消息还没有有效投放记录。'" />
 
         <el-descriptions :column="2" border class="effect-meta">
+          <el-descriptions-item label="已读率" :span="2">{{ formatReadRate(effectDrawer.summary) }}</el-descriptions-item>
           <el-descriptions-item label="最近投放">{{ effectDrawer.summary.latestDeliveryTime || '-' }}</el-descriptions-item>
           <el-descriptions-item label="最近消费">{{ effectDrawer.summary.latestConsumeTime || '-' }}</el-descriptions-item>
         </el-descriptions>
@@ -435,18 +416,6 @@
     const read = Number(summary?.readCount || 0)
     return `${((read / active) * 100).toFixed(1)}%`
   }
-
-  const buildAndroidExpectation = (summary) => {
-    const unread = Number(summary?.unreadCount || 0)
-    if (unread > 0) {
-      return `当前仍有 ${unread} 条未读，Android 端角标与消息列表应能看到对应未读变化。`
-    }
-    const active = Number(summary?.activeDeliveryCount || 0)
-    if (active > 0) {
-      return '当前有效投放已全部读完，Android 端角标应回落到 0 或按剩余未读总数展示。'
-    }
-    return '当前尚未形成有效投放，Android 端未读数不应因该消息产生变化。'
-  }
 </script>
 
 <style scoped>
@@ -491,44 +460,4 @@
     flex-wrap: wrap;
   }
 
-  .effect-verification-card {
-    border: 1px solid var(--el-border-color-lighter);
-  }
-
-  .effect-card-header {
-    font-weight: 600;
-    color: var(--el-text-color-primary);
-  }
-
-  .effect-verification-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .effect-verification-item {
-    min-height: 92px;
-    padding: 12px;
-    border-radius: 12px;
-    background: var(--el-fill-color-light);
-  }
-
-  .effect-verification-label {
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-  }
-
-  .effect-verification-value {
-    font-size: 24px;
-    line-height: 1.1;
-    font-weight: 700;
-    color: var(--el-color-primary);
-  }
-
-  .effect-verification-text {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--el-text-color-primary);
-  }
 </style>

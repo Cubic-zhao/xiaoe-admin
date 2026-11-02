@@ -50,7 +50,8 @@
   import { useUserStore } from '@/store/modules/user'
   import { createNewRouter } from '@/router'
   import { PATH } from '@/utils/constants/system'
-  import { encrypt } from '@/utils/base.js'
+  import { encrypt, ENCRYPT_KEY_MISSING_MESSAGE } from '@/utils/base.js'
+  import { ElMessage } from 'element-plus'
 
   const router = useRouter()
   const loading = ref(false)
@@ -116,7 +117,9 @@
       createNewRouter(res.routerList)
       await router.push(PATH.URL_DASHBOARD)
     } catch (error) {
-      console.error(error)
+      if (error?.message === ENCRYPT_KEY_MISSING_MESSAGE) {
+        ElMessage.error(ENCRYPT_KEY_MISSING_MESSAGE)
+      }
       await getCaptcha()
     } finally {
       loading.value = false

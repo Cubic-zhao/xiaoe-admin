@@ -97,11 +97,6 @@ export const systemApi = {
     return deleteRequest('/system/admin/website/link/delete?id=' + data.id)
   },
 
-  // 视频云初始化
-  videoInit: () => {
-    return getRequest('/system/admin/sys/config/video/init')
-  },
-
   videoConfig: () => {
     return getRequest('/system/admin/sys/config/video/config')
   },

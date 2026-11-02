@@ -10,47 +10,46 @@
     @close="onClose"
   >
     <el-descriptions :column="2" border>
-      <el-descriptions-item label="Record ID">{{ formModel.id || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Status">
+      <el-descriptions-item label="记录 ID">{{ formModel.id || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="状态">
         <el-tag effect="plain" :type="statusTagType(formModel.withdrawStatus)">{{ statusLabel(formModel.withdrawStatus) }}</el-tag>
       </el-descriptions-item>
-      <el-descriptions-item label="User">{{ formModel.nickname || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Mobile">{{ formModel.mobile || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Bank">{{ formModel.bankName || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Card">{{ formModel.maskedCardNo || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Holder">{{ formModel.holderName || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Wallet">{{ walletSummary }}</el-descriptions-item>
-      <el-descriptions-item label="Apply Amount">{{ formatAmount(formModel.withdrawAmount) }}</el-descriptions-item>
-      <el-descriptions-item label="Actual Amount">{{ formatAmount(formModel.actualAmount) }}</el-descriptions-item>
-      <el-descriptions-item label="Created At">{{ formModel.gmtCreate || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Completed At">{{ formModel.completedAt || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Current Remark" :span="2">{{ formModel.failReason || formModel.remark || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="用户">{{ formModel.nickname || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="手机号">{{ formModel.mobile || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="收款银行">{{ formModel.bankName || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="银行卡">{{ formModel.maskedCardNo || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="持卡人">{{ formModel.holderName || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="钱包">{{ walletSummary }}</el-descriptions-item>
+      <el-descriptions-item label="申请金额">{{ formatAmount(formModel.withdrawAmount) }}</el-descriptions-item>
+      <el-descriptions-item label="实到金额">{{ formatAmount(formModel.actualAmount) }}</el-descriptions-item>
+      <el-descriptions-item label="申请时间">{{ formModel.gmtCreate || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="完成时间">{{ formModel.completedAt || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="当前备注" :span="2">{{ formModel.failReason || formModel.remark || '-' }}</el-descriptions-item>
     </el-descriptions>
 
     <el-descriptions :column="2" border style="margin-top: 16px">
-      <el-descriptions-item label="Audit At">{{ formModel.auditAt || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Audit Result">{{ formModel.auditResultLabel || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Timeline" :span="2">{{ formModel.auditTimelineSummary || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Wallet Replay" :span="2">{{ formModel.walletReplayHint || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="Android Replay" :span="2">{{ formModel.androidReplayHint || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="审核时间">{{ formModel.auditAt || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="审核结果">{{ formModel.auditResultLabel || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="处理记录" :span="2">{{ formModel.auditTimelineSummary || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="钱包变动" :span="2">{{ formModel.walletReplayHint || '-' }}</el-descriptions-item>
     </el-descriptions>
 
     <el-descriptions :column="3" border style="margin-top: 16px">
-      <el-descriptions-item label="Snapshot">Available</el-descriptions-item>
-      <el-descriptions-item label="Snapshot">Frozen</el-descriptions-item>
-      <el-descriptions-item label="Meaning">Description</el-descriptions-item>
+      <el-descriptions-item label="余额快照">可用</el-descriptions-item>
+      <el-descriptions-item label="余额快照">冻结</el-descriptions-item>
+      <el-descriptions-item label="时点">说明</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableBeforeApply) }}</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeBeforeApply) }}</el-descriptions-item>
-      <el-descriptions-item>Before apply</el-descriptions-item>
+      <el-descriptions-item>申请前</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.availableAmount) }}</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.freezeAmount) }}</el-descriptions-item>
-      <el-descriptions-item>Current</el-descriptions-item>
+      <el-descriptions-item>当前</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableAfterApprove) }}</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeAfterApprove) }}</el-descriptions-item>
-      <el-descriptions-item>After approve</el-descriptions-item>
+      <el-descriptions-item>审核通过后</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedAvailableAfterReject) }}</el-descriptions-item>
       <el-descriptions-item>{{ formatAmount(formModel.estimatedFreezeAfterReject) }}</el-descriptions-item>
-      <el-descriptions-item>After reject</el-descriptions-item>
+      <el-descriptions-item>驳回后</el-descriptions-item>
     </el-descriptions>
 
     <el-form
@@ -72,7 +71,7 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="onClose()">Close</el-button>
+        <el-button @click="onClose()">关闭</el-button>
         <el-button v-if="mode !== 'view'" :loading="loading" :type="mode === 'reject' ? 'danger' : 'primary'" @click="onSubmit()">
           {{ confirmLabel }}
         </el-button>
@@ -121,7 +120,6 @@
     auditAt: '',
     auditResultLabel: '',
     auditTimelineSummary: '',
-    androidReplayHint: '',
     walletReplayHint: ''
   }
 
@@ -132,7 +130,7 @@
       {
         validator: (_, value, callback) => {
           if (mode.value === 'reject' && !value) {
-            callback(new Error('Reject reason is required'))
+            callback(new Error('请填写驳回原因'))
             return
           }
           callback()
@@ -144,24 +142,24 @@
 
   const dialogTitle = computed(() => {
     if (mode.value === 'pass') {
-      return formModel.withdrawStatus === 'pending' ? 'Mark Withdraw Processing' : 'Mark Withdraw Success'
+      return formModel.withdrawStatus === 'pending' ? '审核通过，标记为打款中' : '标记提现已到账'
     }
     if (mode.value === 'reject') {
-      return 'Reject Withdraw'
+      return '驳回提现申请'
     }
-    return 'Withdraw Detail'
+    return '提现详情'
   })
 
   const confirmLabel = computed(() => {
     if (mode.value === 'reject') {
-      return 'Confirm Reject'
+      return '确认驳回'
     }
-    return formModel.withdrawStatus === 'pending' ? 'Confirm Processing' : 'Confirm Success'
+    return formModel.withdrawStatus === 'pending' ? '确认通过' : '确认已到账'
   })
 
-  const remarkLabel = computed(() => (mode.value === 'reject' ? 'Reject Reason' : 'Audit Note'))
-  const remarkPlaceholder = computed(() => (mode.value === 'reject' ? 'Please provide a reject reason' : 'Optional audit note'))
-  const walletSummary = computed(() => `Available ${formatAmount(formModel.availableAmount)} / Frozen ${formatAmount(formModel.freezeAmount)}`)
+  const remarkLabel = computed(() => (mode.value === 'reject' ? '驳回原因' : '审核备注'))
+  const remarkPlaceholder = computed(() => (mode.value === 'reject' ? '请填写驳回原因，用户可见' : '审核备注（选填）'))
+  const walletSummary = computed(() => `可用 ${formatAmount(formModel.availableAmount)} / 冻结 ${formatAmount(formModel.freezeAmount)}`)
   const canEditAuditRemark = computed(() => mode.value === 'reject' || hasPermission('wallet:withdraw:audit:remark'))
 
   const onOpen = async (nextMode, item) => {
@@ -175,11 +173,11 @@
 
   const onSubmit = async () => {
     if (canEditAuditRemark.value) {
-      const valid = await formRef.value.validate()
+      const valid = await formRef.value.validate().catch(() => false)
       if (!valid) return
     }
     if (loading.value) {
-      ElMessage.warning('Processing...')
+      ElMessage.warning('正在处理···')
       return
     }
 
@@ -190,13 +188,13 @@
           id: formModel.id,
           remark: formModel.auditRemark || undefined
         })
-        ElMessage.success('Withdraw status updated')
+        ElMessage.success('提现状态已更新')
       } else {
         await usersApi.withdrawReject({
           id: formModel.id,
           remark: formModel.auditRemark
         })
-        ElMessage.success('Withdraw rejected')
+        ElMessage.success('已驳回提现申请')
       }
       emit('refresh')
       onClose()
@@ -219,17 +217,17 @@
   const statusLabel = (status) => {
     switch (status) {
       case 'pending':
-        return 'Pending'
+        return '待审核'
       case 'processing':
-        return 'Processing'
+        return '打款中'
       case 'success':
-        return 'Success'
+        return '已到账'
       case 'failed':
-        return 'Failed'
+        return '已驳回'
       case 'cancelled':
-        return 'Cancelled'
+        return '已取消'
       default:
-        return status || 'Unknown'
+        return status || '-'
     }
   }
 

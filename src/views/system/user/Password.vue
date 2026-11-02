@@ -21,7 +21,7 @@
   import { systemApi } from '@/api/system'
   import { reactive, ref } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { encrypt } from '@/utils/base.js'
+  import { encrypt, ENCRYPT_KEY_MISSING_MESSAGE } from '@/utils/base.js'
 
   // 校验规则
   const formRef = ref()
@@ -55,17 +55,17 @@
     loading.value = true
     try {
       if (formModel.userId) {
-        // 密码加密
-        formModel.mobilePwdEncrypt = encrypt(formModel.mobilePwd)
-        delete formModel.mobilePwd
-        delete formModel.confirmPassword
-        const res = await systemApi.sysUserPassword(formModel)
-        ElMessage.success(res)
+        // 单独构造请求体，失败后表单仍保留原输入，可直接重试
+        const payload = { userId: formModel.userId, mobilePwdEncrypt: encrypt(formModel.mobilePwd) }
+        const res = await systemApi.sysUserPassword(payload)
+        ElMessage.success(res || '密码已重置')
         emit('refresh')
         onClose()
       }
     } catch (error) {
-      console.error(error)
+      if (error?.message === ENCRYPT_KEY_MISSING_MESSAGE) {
+        ElMessage.error(ENCRYPT_KEY_MISSING_MESSAGE)
+      }
     } finally {
       loading.value = false
     }

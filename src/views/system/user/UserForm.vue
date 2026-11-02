@@ -26,7 +26,7 @@
   import { systemApi } from '@/api/system'
   import { reactive, ref } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { encrypt } from '@/utils/base.js'
+  import { encrypt, ENCRYPT_KEY_MISSING_MESSAGE } from '@/utils/base.js'
 
   // 校验规则
   const formRef = ref()
@@ -61,13 +61,17 @@
         await systemApi.sysUserEdit(formModel)
         ElMessage.success('修改成功')
       } else {
-        formModel.mobilePwdEncrypt = encrypt(formModel.mobilePwd)
-        delete formModel.mobilePwd
-        await systemApi.sysUserSave(formModel)
+        // 单独构造请求体，失败后表单仍保留原输入，可直接重试
+        const { mobilePwd, ...rest } = formModel
+        await systemApi.sysUserSave({ ...rest, mobilePwdEncrypt: encrypt(mobilePwd) })
         ElMessage.success('添加成功')
       }
       emit('refresh')
       onClose()
+    } catch (error) {
+      if (error?.message === ENCRYPT_KEY_MISSING_MESSAGE) {
+        ElMessage.error(ENCRYPT_KEY_MISSING_MESSAGE)
+      }
     } finally {
       loading.value = false
     }

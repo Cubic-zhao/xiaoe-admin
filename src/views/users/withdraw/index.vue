@@ -4,72 +4,72 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item>
-            <el-input v-model="query.mobile" placeholder="User mobile" clearable />
+            <el-input v-model="query.mobile" placeholder="用户手机号" clearable />
           </el-form-item>
           <el-form-item>
-            <el-input v-model="query.nickname" placeholder="User nickname" clearable />
+            <el-input v-model="query.nickname" placeholder="用户昵称" clearable />
           </el-form-item>
           <el-form-item>
-            <el-select v-model="query.withdrawStatus" clearable placeholder="Withdraw status" style="width: 180px">
+            <el-select v-model="query.withdrawStatus" clearable placeholder="提现状态" style="width: 180px">
               <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleQuery()">Search</el-button>
-            <el-button @click="resetQuery()">Reset</el-button>
+            <el-button type="primary" @click="handleQuery()">查询</el-button>
+            <el-button @click="resetQuery()">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
 
     <el-table v-loading="page.loading" :data="page.list" row-key="id">
-      <el-table-column label="Record" min-width="90" prop="id" />
-      <el-table-column label="User" min-width="180">
+      <el-table-column label="记录" min-width="90" prop="id" />
+      <el-table-column label="用户" min-width="180">
         <template #default="scope">
           <div>{{ scope.row.nickname || '-' }}</div>
           <div class="table-secondary">{{ scope.row.mobile || '-' }}</div>
-          <div class="table-secondary">UID: {{ scope.row.userId }}</div>
+          <div class="table-secondary">用户 ID：{{ scope.row.userId }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Bank" min-width="220">
+      <el-table-column label="收款银行" min-width="220">
         <template #default="scope">
           <div>{{ scope.row.bankName || '-' }}</div>
           <div class="table-secondary">{{ scope.row.maskedCardNo || '-' }}</div>
           <div class="table-secondary">{{ scope.row.holderName || '-' }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Amount" min-width="160">
+      <el-table-column label="金额" min-width="160">
         <template #default="scope">
-          <div>Apply: {{ formatAmount(scope.row.withdrawAmount) }}</div>
-          <div class="table-secondary">Fee: {{ formatAmount(scope.row.feeAmount) }}</div>
-          <div class="table-secondary">Actual: {{ formatAmount(scope.row.actualAmount) }}</div>
+          <div>申请：{{ formatAmount(scope.row.withdrawAmount) }}</div>
+          <div class="table-secondary">手续费：{{ formatAmount(scope.row.feeAmount) }}</div>
+          <div class="table-secondary">实到：{{ formatAmount(scope.row.actualAmount) }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Wallet" min-width="160">
+      <el-table-column label="钱包" min-width="160">
         <template #default="scope">
-          <div>Available: {{ formatAmount(scope.row.availableAmount) }}</div>
-          <div class="table-secondary">Frozen: {{ formatAmount(scope.row.freezeAmount) }}</div>
+          <div>可用：{{ formatAmount(scope.row.availableAmount) }}</div>
+          <div class="table-secondary">冻结：{{ formatAmount(scope.row.freezeAmount) }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Status" min-width="120">
+      <el-table-column label="状态" min-width="120">
         <template #default="scope">
           <el-tag effect="plain" :type="statusTagType(scope.row.withdrawStatus)">{{ statusLabel(scope.row.withdrawStatus) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Timeline" min-width="180">
+      <el-table-column label="时间" min-width="180">
         <template #default="scope">
           <div>{{ scope.row.gmtCreate || '-' }}</div>
-          <div class="table-secondary">{{ scope.row.completedAt || 'Pending completion' }}</div>
+          <div class="table-secondary">{{ scope.row.completedAt || '未完成' }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Remark" min-width="220" show-overflow-tooltip>
+      <el-table-column label="备注" min-width="220" show-overflow-tooltip>
         <template #default="scope">
           <div>{{ scope.row.failReason || scope.row.remark || '-' }}</div>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="Actions" min-width="220">
+      <el-table-column fixed="right" label="操作" min-width="220">
         <template #default="scope">
-          <el-button text type="primary" @click="openFormModal('view', scope.row)">View</el-button>
+          <el-button text type="primary" @click="openFormModal('view', scope.row)">查看</el-button>
           <el-divider direction="vertical" />
           <el-button
             v-if="canPass(scope.row.withdrawStatus)"
@@ -88,7 +88,7 @@
             type="danger"
             @click="openFormModal('reject', scope.row)"
           >
-            Reject
+            驳回
           </el-button>
         </template>
       </el-table-column>
@@ -111,11 +111,11 @@
   const formRef = ref()
 
   const statusOptions = [
-    { label: 'Pending', value: 'pending' },
-    { label: 'Processing', value: 'processing' },
-    { label: 'Success', value: 'success' },
-    { label: 'Failed', value: 'failed' },
-    { label: 'Cancelled', value: 'cancelled' }
+    { label: '待审核', value: 'pending' },
+    { label: '打款中', value: 'processing' },
+    { label: '已到账', value: 'success' },
+    { label: '已驳回', value: 'failed' },
+    { label: '已取消', value: 'cancelled' }
   ]
 
   const routeUserId = computed(() => {
@@ -143,7 +143,7 @@
 
   const statusLabel = (status) => {
     const target = statusOptions.find((item) => item.value === status)
-    return target ? target.label : status || 'Unknown'
+    return target ? target.label : status || '-'
   }
 
   const statusTagType = (status) => {
@@ -165,7 +165,7 @@
 
   const canPass = (status) => status === 'pending' || status === 'processing'
   const canReject = (status) => status === 'pending' || status === 'processing'
-  const passActionLabel = (status) => (status === 'pending' ? 'Mark Processing' : 'Mark Success')
+  const passActionLabel = (status) => (status === 'pending' ? '标记打款中' : '标记已到账')
 </script>
 
 <style scoped>

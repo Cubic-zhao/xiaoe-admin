@@ -34,7 +34,6 @@
     const res = await courseApi.resourceLibraryPreview({ id: props.resourceId })
     const params = JSON.parse(res.vodPlayConfig)
     if (res.vodPlatform === 1) {
-      console.log(params)
       // 领课云
       simplePlay(params)
     } else if (res.vodPlatform === 2) {

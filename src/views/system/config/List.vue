@@ -1,20 +1,20 @@
 <template>
   <el-alert
     v-if="props.configType === '2'"
-    title="Teacher 移动端策略：交付（deliver）/下线（offline）"
+    title="老师端移动策略：交付（deliver）/ 下线（offline）"
     type="info"
     :closable="false"
     style="margin-bottom: 12px"
   />
   <el-card v-if="props.configType === '2'" shadow="never" style="margin-bottom: 12px">
     <el-form label-width="140px">
-      <el-form-item label="Teacher 交付策略">
-        <el-radio-group v-model="teacherStrategy">
+      <el-form-item label="老师端交付策略">
+        <el-radio-group v-model="teacherStrategy" :disabled="!canEditConfig">
           <el-radio label="deliver">交付</el-radio>
           <el-radio label="offline">下线</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="canEditConfig">
         <el-button type="primary" @click="saveTeacherStrategy">保存策略</el-button>
       </el-form-item>
     </el-form>
@@ -45,7 +45,7 @@
         <span style="color: #999; font-size: 13px">{{ scope.row.remark }}</span>
       </template>
     </el-table-column>
-    <el-table-column v-permission="'sys:config:edit'" label="操作" width="220">
+    <el-table-column v-if="canEditConfig" label="操作" width="220">
       <template #default="scope">
         <el-switch
           v-if="scope.row.contentType === 4"
@@ -56,7 +56,8 @@
           inactive-color="#ff4949"
           inactive-text="关闭"
           inactive-value="0"
-          @change="handleSwitch(scope.row)"
+          :loading="switchingId === scope.row.id"
+          @change="(value) => handleSwitch(scope.row, value)"
         />
         <el-button v-else text type="primary" @click="openFormModal(scope.row)">编辑</el-button>
       </template>
@@ -73,11 +74,14 @@
   import { systemApi } from '@/api/system.js'
   import { ElMessage } from 'element-plus'
   import EnumView from '@/components/Enum/View/index.vue'
+  import { hasPermission } from '@/utils/permission.js'
 
   const emit = defineEmits(['refresh'])
   const handleList = () => {
     emit('refresh')
   }
+
+  const canEditConfig = hasPermission('sys:config:edit')
 
   const teacherStrategy = ref('deliver')
   const teacherStrategyConfig = computed(() => props.list?.find((item) => item.configKey === 'mobileTeacherStrategy'))
@@ -102,7 +106,7 @@
       configKey: 'mobileTeacherStrategy',
       configValue: teacherStrategy.value
     })
-    ElMessage.success('Teacher 策略已保存')
+    ElMessage.success('老师端策略已保存')
     emit('refresh')
   }
 
@@ -112,13 +116,23 @@
     viewRef.value.onOpen(item)
   }
 
-  const handleSwitch = (row) => {
-    const formModel = {
-      id: row.id,
-      configKey: row.configKey,
-      configValue: row.configValue
+  // 开关：等待保存结果，失败时还原为切换前的值
+  const switchingId = ref()
+  const handleSwitch = async (row, value) => {
+    const previous = value === '1' ? '0' : '1'
+    switchingId.value = row.id
+    try {
+      await systemApi.sysConfigEdit({
+        id: row.id,
+        configKey: row.configKey,
+        configValue: value
+      })
+      ElMessage.success('已保存')
+    } catch {
+      row.configValue = previous
+    } finally {
+      switchingId.value = undefined
     }
-    systemApi.sysConfigEdit(formModel)
   }
 
   // 添加/修改

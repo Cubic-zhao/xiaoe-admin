@@ -4,40 +4,40 @@
       <div class="search_bar clearfix">
         <el-form :model="query" inline label-width="80px">
           <el-form-item>
-            <el-input v-model="query.roleName" placeholder="Role name" clearable />
+            <el-input v-model="query.roleName" placeholder="角色名称" clearable />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleQuery()">Search</el-button>
-            <el-button @click="resetQuery()">Reset</el-button>
+            <el-button type="primary" @click="handleQuery()">查询</el-button>
+            <el-button @click="resetQuery()">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="button_bar">
-        <el-button v-if="canSaveRole" type="primary" @click="openFormModal()">Add Role</el-button>
+        <el-button v-if="canSaveRole" type="primary" @click="openFormModal()">新增角色</el-button>
       </div>
     </div>
 
     <el-table v-loading="page.loading" :data="page.list" row-key="id">
-      <el-table-column label="Role Name" prop="roleName" />
-      <el-table-column label="Remark" prop="remark" show-overflow-tooltip />
-      <el-table-column label="Status" width="100">
+      <el-table-column label="角色名称" prop="roleName" />
+      <el-table-column label="备注" prop="remark" show-overflow-tooltip />
+      <el-table-column label="状态" width="100">
         <template #default="scope">
           <enum-view :enum-name="'StatusIdEnum'" :enum-value="scope.row.statusId" />
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="320" fixed="right">
+      <el-table-column label="操作" width="320" fixed="right">
         <template #default="scope">
-          <el-button v-if="canEditRole" text type="primary" @click="openFormModal(scope.row)">Edit</el-button>
+          <el-button v-if="canEditRole" text type="primary" @click="openFormModal(scope.row)">编辑</el-button>
 
           <el-divider v-if="canEditRole && canSetRoleMenu" direction="vertical" />
 
-          <el-button v-if="canSetRoleMenu" text type="primary" @click="openMenuSet(scope.row)">Assign Menus</el-button>
+          <el-button v-if="canSetRoleMenu" text type="primary" @click="openMenuSet(scope.row)">分配菜单</el-button>
 
           <el-divider v-if="canManageMore" direction="vertical" />
 
           <el-dropdown v-if="canManageMore">
             <el-button text type="primary">
-              More
+              更多
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -45,10 +45,10 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item v-if="canEditRole" @click="handleStatus(scope.row)">
-                  <span>{{ scope.row.statusId === 1 ? 'Disable' : 'Enable' }}</span>
+                  <span>{{ scope.row.statusId === 1 ? '禁用' : '启用' }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="canDeleteRole" @click="handleDelete(scope.row)">
-                  <span>Delete</span>
+                  <span>删除</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>

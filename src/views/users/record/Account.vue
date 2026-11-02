@@ -13,7 +13,7 @@
         <el-button v-permission="'user:edit'" type="primary" @click="openConsumeRecord()">添加余额</el-button>
       </div>
     </div>
-    <el-card class="reconcile-card" shadow="never">
+    <el-card v-if="canReconcile" class="reconcile-card" shadow="never">
       <template #header>
         <div class="reconcile-header">
           <span>充值对账与主动查单</span>
@@ -47,7 +47,7 @@
         type="info"
         :closable="false"
         show-icon
-        title="该面板用于运营观察和触发 created/paying 充值单的主动查单；如果缺少真实渠道配置，查单结果仍会按联调网关能力返回，不能替代商用签核。"
+        title="用于查看充值单状态，并对待支付、支付中的充值单向支付渠道主动查单；到账结果以渠道回调验签和查单结果为准。"
       />
     </el-card>
     <el-table v-loading="page.loading" :data="page.list">
@@ -81,7 +81,10 @@
   import ConsumeForm from './ConsumeForm.vue'
   import { useRoute } from 'vue-router/dist/vue-router'
   import EnumView from '@/components/Enum/View/index.vue'
+  import { hasPermission } from '@/utils/permission.js'
   const route = useRoute()
+  // 充值对账接口挂在隐藏菜单 1310（user:wallet:recharge:page）下，无此权限不展示面板、不发请求
+  const canReconcile = hasPermission('user:wallet:recharge:page')
   // 添加
   const consumeRef = ref()
   const openConsumeRecord = () => {
@@ -120,7 +123,9 @@
     }
   }
 
-  onMounted(loadRechargeReconcileStats)
+  onMounted(() => {
+    if (canReconcile) loadRechargeReconcileStats()
+  })
 
   // 基础功能
   const { page, handlePage, query, handleQuery, resetQuery } = useTable(

@@ -59,9 +59,9 @@
                 <el-dropdown-item>
                   <el-button v-permission="'user:edit'" text type="primary" @click="openFormModal(scope.row)">编辑</el-button>
                 </el-dropdown-item>
-                <el-dropdown-item @click="handleStatus(scope.row)">
-                  <el-button v-if="scope.row.statusId == 0" v-permission="'user:edit'" text type="primary">启用</el-button>
-                  <el-button v-if="scope.row.statusId == 1" v-permission="'user:edit'" text type="primary">禁用</el-button>
+                <el-dropdown-item v-permission="'user:edit'" @click="handleStatus(scope.row)">
+                  <el-button v-if="scope.row.statusId == 0" text type="primary">启用</el-button>
+                  <el-button v-if="scope.row.statusId == 1" text type="primary">禁用</el-button>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>

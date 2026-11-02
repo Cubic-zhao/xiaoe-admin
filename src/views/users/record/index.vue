@@ -36,7 +36,7 @@
       <el-tab-pane label="账户记录" name="account">
         <users-account v-if="activeName === 'account'" />
       </el-tab-pane>
-      <el-tab-pane v-if="canVisitWithdrawAudit" label="Withdraw Audit" name="withdraw">
+      <el-tab-pane v-if="canVisitWithdrawAudit" label="提现审核" name="withdraw">
         <users-withdraw v-if="activeName === 'withdraw'" />
       </el-tab-pane>
     </el-tabs>

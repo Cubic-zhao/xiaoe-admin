@@ -1,7 +1,7 @@
 <template>
   <el-dialog :append-to-body="true" :model-value="visible" :title="config.configName" width="800px" center align-center :destroy-on-close="true" @close="onClose">
     <div class="dialog-content">
-      <div v-html="config.configValue" />
+      <pre class="config-value">{{ config.configValue }}</pre>
     </div>
     <template #footer>
       <span class="dialog-footer">
@@ -32,3 +32,11 @@
     Object.assign(config, {})
   }
 </script>
+<style lang="scss" scoped>
+  .config-value {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: inherit;
+  }
+</style>

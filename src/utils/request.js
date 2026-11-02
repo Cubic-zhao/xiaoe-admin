@@ -6,6 +6,7 @@ import { PATH } from '@/utils/constants/system'
 
 const pending = [] // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
 const CancelToken = axios.CancelToken
+let sessionExpiredNotified = false // 302-305 登出提示只弹一次
 
 // create an axios instance
 const request = axios.create({
@@ -60,40 +61,66 @@ request.interceptors.response.use(
     }
 
     if (res.code === 302 || res.code === 303 || res.code === 304 || res.code === 305) {
-      // 302token异常，303登录异常，304异地登录，305菜单过期
-      ElMessageBox.confirm('提示', '确定登出', {
-        confirmButtonText: res.msg,
-        showCancelButton: false,
-        type: 'warning'
-      }).then(() => {
-        removeToken()
-        location.reload() // 重新实例化vue-router对象
-      })
+      // 302token异常，303登录异常，304异地登录，305菜单过期：并发请求只弹一次，任何关闭方式都登出
+      if (!sessionExpiredNotified) {
+        sessionExpiredNotified = true
+        ElMessageBox.alert(res.msg ? `${res.msg}，请重新登录` : '登录状态已失效，请重新登录', '提示', {
+          confirmButtonText: '重新登录',
+          type: 'warning',
+          showClose: false,
+          closeOnPressEscape: false
+        }).finally(() => {
+          removeToken()
+          location.reload() // 重新实例化vue-router对象
+        })
+      }
       return Promise.reject(response)
     }
 
     if (res.code === 306) {
-      // 权限不足
-      router.push({ path: PATH.URL_403 }).then(() => {
-        ElMessage.error('权限不足，请联系管理员')
-      })
+      // 权限不足：只提示，不离开当前页面（路由级无权限由守卫处理）
+      ElMessage.error(res.msg || '权限不足，请联系管理员')
       return Promise.reject(response)
     }
 
     // 其他异常
-    console.error(response)
-    ElMessage.error({ message: res.msg, duration: 5 * 1000 })
+    ElMessage.error({ message: res.msg || '操作失败，请稍后重试', duration: 5 * 1000 })
     return Promise.reject(response)
   },
   (error) => {
-    if (error.response && error.response.status === 500 && error.response.data.msg) {
-      ElMessage.error({ message: error.response.data.msg, duration: 5 * 1000 })
-    } else {
-      console.error(error)
+    const message = httpErrorMessage(error)
+    if (message) {
+      ElMessage.error({ message, duration: 5 * 1000 })
     }
     return Promise.reject(error)
   }
 )
+
+/**
+ * HTTP 层错误提示；被取消的请求不提示
+ */
+const httpErrorMessage = (error) => {
+  if (axios.isCancel(error) || error?.code === 'ERR_CANCELED') {
+    return ''
+  }
+  const status = error?.response?.status
+  if (status === 500 && error.response.data?.msg) {
+    return error.response.data.msg
+  }
+  if (status === 413) {
+    return '文件过大，请压缩后重试'
+  }
+  if (status === 502 || status === 503 || status === 504) {
+    return '服务暂不可用，请稍后重试'
+  }
+  if (error?.code === 'ECONNABORTED' || error?.code === 'ETIMEDOUT') {
+    return '请求超时，请稍后重试'
+  }
+  if (!error?.response) {
+    return '网络连接失败，请检查网络后重试'
+  }
+  return error.response.data?.msg || `请求失败（${status}），请稍后重试`
+}
 
 const removePending = (config, isCancel) => {
   for (const p in pending) {

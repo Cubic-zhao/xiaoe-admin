@@ -75,7 +75,6 @@
   }
   const handleCourse = async (item) => {
     course.value.visible = false
-    console.log(item)
     const formModel = { zoneId: route.query.zoneId, courseId: item.courseId, sort: 1 }
     await courseApi.zoneCourseSave(formModel)
     handleQuery()

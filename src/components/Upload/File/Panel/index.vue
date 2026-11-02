@@ -22,17 +22,7 @@
           <div class="file_size">{{ transformSize(item.fileSize) }}</div>
           <div class="file_progress_number">{{ item.progress }} %</div>
           <div class="file_status c-brand">{{ STATUSTIP[item.status] }}</div>
-          <div v-if="item.status === 'uploading'" class="file_ctrl_btn" @click.stop="stopUpload(item)">
-            <el-icon>
-              <VideoPause />
-            </el-icon>
-          </div>
-          <div v-if="item.status === 'fail'" class="file_ctrl_btn" @click.stop="startUpload(item)">
-            <el-icon>
-              <VideoPlay />
-            </el-icon>
-          </div>
-          <div v-if="item.status === 'stop'" class="file_ctrl_btn" @click.stop="resumeUpload(item)">
+          <div v-if="item.status === 'fail'" class="file_ctrl_btn" title="重新上传" @click.stop="startUpload(item)">
             <el-icon>
               <VideoPlay />
             </el-icon>
@@ -90,11 +80,6 @@
         handleFile(startFile)
       }
     }
-  }
-
-  // 暂停上传
-  const stopUpload = (row) => {
-    console.log(row)
   }
 
   // 关闭面板

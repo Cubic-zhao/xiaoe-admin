@@ -18,5 +18,4 @@ yarn-debug.log*
 *.springBeans
 *.factorypath
 
-package-lock.json
 pnpm-lock.yaml
